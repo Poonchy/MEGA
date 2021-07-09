@@ -1,0 +1,17 @@
+A : Fresh room, no interaction with treasure/interaction/boss
+X : Boss killed
+H : Boss hardmode killed
+C : Boss Challenge mode killed
+S : Boss challnge mode and hardmode killed
+
+
+I : Room interacted with
+Q : Room has interactable
+B : Room interacted with and rare dead
+
+D : Rare failed
+E : Rare alive
+
+T : Treasure opened
+R : Treasure exists
+F : Treasure opened rare dead
