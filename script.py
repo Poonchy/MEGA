@@ -96,8 +96,7 @@ async def on_message(message):
         pyd.res.activeUsers.remove(authortoken)
     elif message.content.lower().startswith('stop'):
         await pyd.res.client.logout()
-    else:
-        pyd.res.activeUsers.remove(authortoken)
+
 @pyd.res.client.event
 async def on_ready():
     print('Succesfull bootup')

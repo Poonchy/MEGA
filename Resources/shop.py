@@ -29,7 +29,7 @@ Shops = [
         "thank":"A pleasure doin\' business with ye!\"",
         "poor":"The merchant looks at you and cackles \n\"Yer not buying that with a coin purse that light!\"",
         "bye":"Hope to be seein' you around! Hopefully as a corpse!",
-        "items": [10001, 10000, 51, 52, 53, 10, 14],
-        "prices": [100, 1000, 10, 10, 10, 10, 10]
+        "items": [10001],
+        "prices": [500]
     })
 ]

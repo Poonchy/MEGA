@@ -7,7 +7,8 @@ import Resources.spells as spl
 import Resources.shop as shp
 
 #Importing dungeons
-from Resources.dungeons.deadmines import Deadmines
+import Resources.dungeon as dng
+import Resources.dungeons.deadmines as dmvc
 def randomString(stringLength):
     letters = res.string.ascii_lowercase
     return ''.join(res.random.choice(letters) for i in range(stringLength))
@@ -398,7 +399,6 @@ async def UserExists(userID, message, checkRunning, sendmsg):
     if checkRunning and User.isRunning(userID):
         if sendmsg:
             await sendMessage(userID, message,"You are doing something else.", True)
-        res.activeUsers.remove(userID)
         return False
     if not User.exists():
         if sendmsg:
@@ -416,6 +416,10 @@ async def equip(userID, message):
         res.activeUsers.remove(userID)
         return await sendMessage(userID, message, "Type which item you'd like to equip.", True)
     itemName = filterSpecialChars(subStringAfter("equip", message.content), True, False)
+    checkItem = itm.Item.returnItem(itemName)
+    if not checkItem.ID:
+        res.activeUsers.remove(userID)
+        return await sendMessage(userID, message, "Item does not exist.", True)
     item = await showAllUniqueInInventory(userID, message, itemName, "Which one would you like to equip?")
     if item == None:
         res.activeUsers.remove(userID)
@@ -426,7 +430,7 @@ async def equip(userID, message):
     res.activeUsers.remove(userID)
     await sendMessage(userID, message, msg, True)
 async def unequip(userID, message):
-    if not await UserExists(userID, message, True):
+    if not await UserExists(userID, message, True, True):
         return
     User = char.Character(con.select("*","characters","ID",userID))
     User.toggleRun(userID)
@@ -434,6 +438,10 @@ async def unequip(userID, message):
         res.activeUsers.remove(userID)
         return await sendMessage(userID, message, "Type which item you'd like to unequip.", True)
     itemName = filterSpecialChars(subStringAfter("unequip", message.content), True, False)
+    checkItem = itm.Item.returnItem(itemName)
+    if not checkItem.ID:
+        res.activeUsers.remove(userID)
+        return await sendMessage(userID, message, "Item does not exist.", True)
     item = itm.Item.returnItem(itemName)
     itemString = item.returnItemString()
     unequipped, msg = User.unequip(itemString.split("-"))
@@ -451,6 +459,10 @@ async def sell(userID, message):
         res.activeUsers.remove(userID)
         return await sendMessage(userID, message, "Type which item you'd like to sell.", True)
     itemName = filterSpecialChars(subStringAfter("sell", message.content), True, False)
+    checkItem = itm.Item.returnItem(itemName)
+    if not checkItem.ID:
+        res.activeUsers.remove(userID)
+        return await sendMessage(userID, message, "Item does not exist.", True)
     item = await showAllUniqueInInventory(userID, message, itemName, "Which one would you like to sell?")
     if item == None:
         res.activeUsers.remove(userID)
@@ -469,8 +481,19 @@ async def use(userID, message):
         res.activeUsers.remove(userID)
         return await sendMessage(userID, message, "Type which item you'd like to use.", True)
     itemName = filterSpecialChars(subStringAfter("use", message.content), True, False)
-    item = await showAllUniqueInInventory(userID, message, itemName, "Which one would you like to use?")
-    if item == None:
+    itemQueried = itm.Item.returnItem(itemName)
+    if not itemQueried.ID:
+        res.activeUsers.remove(userID)
+        return await sendMessage(userID, message, "Item does not exist.", True)
+    if itemQueried.Slot:
+        item = User.checkIfWearingItem(itemQueried)
+        if not item:
+            res.activeUsers.remove(userID)
+            return await sendMessage(userID, message, "Item not found equipped.", True)
+        item = item.split("-")
+    else:
+        item = await showAllUniqueInInventory(userID, message, itemName, "Which one would you like to use?")
+    if not item:
         res.activeUsers.remove(userID)
         return await sendMessage(userID, message, "Using timed out.", True)
     used, msg = User.use(item)
@@ -574,7 +597,7 @@ async def showResources(userID, message):
 async def queryItem(userID, message):
     if not len(message.content.split(" ")) >= 3:
         return await sendMessage(userID, message, "Type which item you'd like to see.", True)
-    if UserExists(userID, message, False, False):
+    if await UserExists(userID, message, False, False):
         User = char.Character(con.select("*","characters","ID",userID))
         race = User.Race
     else:
@@ -583,10 +606,24 @@ async def queryItem(userID, message):
     item = itm.Item.returnItem(itemName)
     if not item.exists():
         return await sendMessage(userID, message, "Item does not exist.", True)
-    itemString = item.returnItemString()
+    #Check if user has it in bag
+    itemString = ""
+    if await UserExists(userID, message, False, False):
+        User = char.Character(con.select("*","characters","ID",userID))
+        if item.Slot:
+            if User.checkIfWearingItem(item):
+                itemString = getattr(User, item.Slot)
+            elif User.checkIfHasItem(item):
+                itemString = User.checkIfHasItem()[0]
+            else:
+                itemString = item.returnItemString()
+        else:
+            itemString = item.returnItemString()
+    else:
+        itemString = item.returnItemString()
     await showItemData(userID, message, itemString)
     itemStringSplit = itemString.split("-")
-    if itemStringSplit[2] != "F" and item.Slot:
+    if itemStringSplit[2] != "F" and item.Slot and item.Type:
         canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
         #Paste backround and race
         pasteModel("white", "", canvas, (0,0), False)
@@ -634,7 +671,7 @@ async def showItemData(userID, message, itemString):
         w, h = d.textsize(item.Type, font = Morpheussmall)
         del noVal
         heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (300 - 7 - w, heightCheck), item.Type, canvas, message, True, (255,255,255))
-    elif item.Slot and item.Type.lower() == None:
+    elif item.Slot and item.Type == None:
         heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), item.Slot, canvas, message, True, (255,255,255))
     if item.Damage:
         heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), item.Damage + " Damage", canvas, message, True, (255,255,255))
@@ -663,9 +700,14 @@ async def showItemData(userID, message, itemString):
     
     if itemSegments[4] != "F":
         spellSplit = itemSegments[4].split("&")
-        spellSplit.pop()
+        if "" in spellSplit:
+            spellSplit.remove("")
         for i in spellSplit:
-            heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Use: " + spl.Spell.findByID(i).Description, canvas, message, True, (30,255,0))
+            spell = spl.Spell.findByID(i)
+            if spell.Type == "active":
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Use: " + spell.Description, canvas, message, True, (30,255,0))
+            else:
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Equipped: " + spell.Description, canvas, message, True, (30,255,0))
 
     if itemSegments[5] != "F":
         if int(itemSegments[5]) > 1:
@@ -796,6 +838,7 @@ async def showInventory(userID, message):
     msg = "Your inventory:"
     for i in User.Inventory.split(","):
         if "" != i:
+            print (i)
             x = i.split("-")
             item = itm.Item.returnItem(None, x[1])
             msg += " \n- " + item.returnFullItemName()
@@ -1006,13 +1049,20 @@ async def runDungeon(userID, message):
         return
     if not len(message.content.split(" ")) >= 3:
         return await sendMessage(userID, message, "Type which dungeon you'd like to run.", True)
+    
     cont = True
     User = char.Character(con.select("*","characters","ID",userID))
     dungeon = []
     curLockout = ""
     nameOfDungeon = filterSpecialChars(subStringAfter("run", message.content), True, False)
     if nameOfDungeon == "deadmines":
-        dungeon = Deadmines
+        dungeon = dng.Dungeon([
+            dmvc.room1, dmvc.room2, dmvc.room3, dmvc.room4, dmvc.room5, dmvc.room6, dmvc.room7, dmvc.room8, dmvc.room9, dmvc.room10, dmvc.room11, dmvc.room12
+        ],{
+            "intro":"You\'ve reached the entrance to The Deadmines, do you wish to enter or flee?",
+            "attunefail":"You try to open the door, but no matter how hard you try, the door will not budge. It\'s locked, and the key is nowhere in sight. \n \nOut of the corner of your eye, you catch a glimpse of a merchant, skulking around. \n%NPC Defias Profiteer): ‘Trying to get in there, are we? Not without this here key. You want it? Pay up.’ \n \nYou can view what the merchant sells by typing \'Mega Shop Deadmines\'.",
+            "hardmodecheck": dmvc.hardMode
+        })
         lister = User.Lockouts.split(",")
         for i in lister:
             if "DMVC" in i:
@@ -1021,7 +1071,7 @@ async def runDungeon(userID, message):
         return await sendMessage(userID, message, "That dungeon doesn't exist.", True)
     User.toggleRun(userID)
     userReaction, cpumsg = await addReactionsAndWaitFor(userID, message, dungeon.intro, 60, whom = userID, fight='⚔', flee='🏃')
-    if not userReaction[userID] or userReaction[userID] == "no":
+    if not userReaction[userID] or userReaction[userID] == "flee":
         res.activeUsers.remove(userID)
         return await sendMessage(userID, message, "After contemplating for awhile, you choose to flee and live another day.", True)
     if curLockout[0:3] != "0=>":
@@ -1075,7 +1125,14 @@ async def runDungeon(userID, message):
                 curLetter = "E"
             else:
                 curLockout = User.updateLockout("D", curLockout, int(dungeon.cPoS.ID))
-                curLetter = "D"
+                if dungeon.cPoS.treasure:
+                    emojis["treasure"] = '🎁'
+                    curLetter = 'F'
+                elif dungeon.cPoS.interactable:
+                    emojis["interact"] = '🧩'
+                    curLetter = 'B'
+                else:
+                    curLetter = "D"
         else:
             #checks for other stuff
             if dungeon.cPoS.treasure and (curLetter != "T" and curLetter != 'F'):
@@ -1108,9 +1165,18 @@ async def runDungeon(userID, message):
                 expGained = User.modifyExp(expCalc,expCalc)
                 goldGained = User.modifyGold(2 + int(dungeon.cPoS.boss.level), 5 + int(dungeon.cPoS.boss.level))
                 cmodeloot = True if userReaction[userID] == "cmode" else False
-                itemLooted = itm.Item.returnItem(None, str(dungeon.cPoS.boss.rollLoot(cmodeloot)))
-                itemGained = itemLooted.ItemStringWithNewGlobalID()
-                User.addToInventory(itemGained)
+                lootallowed = dungeon.cPoS.boss.cmlootamount if userReaction[userID] == "cmode" else dungeon.cPoS.boss.lootamount
+                itemsDropped = dungeon.cPoS.boss.rollLoot(cmodeloot, User.Class, lootallowed)
+                itemsLooted = []
+                itemsGained = []
+                itemmsg = ""
+                for i in itemsDropped:
+                    itemLooted = itm.Item.returnItem(None, str(i))
+                    itemsLooted.append(itemLooted)
+                    itemGained = itemLooted.ItemStringWithNewGlobalID()
+                    itemsGained.append(itemGained)
+                    User.addToInventory(itemGained)
+                    itemmsg += " \nYou recieved item: " + itemLooted.returnFullItemName()
                 if userReaction[userID] == "cmode" and dungeon.cPoS.boss.hardmodecheck(User):
                     curLockout = User.updateLockout("S", curLockout, int(dungeon.cPoS.ID))
                 elif userReaction[userID] == "cmode" and not dungeon.cPoS.boss.hardmodecheck(User):
@@ -1119,7 +1185,7 @@ async def runDungeon(userID, message):
                     curLockout = User.updateLockout("H", curLockout, int(dungeon.cPoS.ID))
                 else:
                     curLockout = User.updateLockout("X", curLockout, int(dungeon.cPoS.ID))
-                msg = " \n \nYou gained " + str(goldGained) + " gold and " + str(expGained) + " exp. \nYou recieved an item: " + itemLooted.returnFullItemName() + User.checkLevelUp(True)
+                msg = " \n \nYou gained " + str(goldGained) + " gold and " + str(expGained) + " exp." + itemmsg + User.checkLevelUp(True)
                 if userReaction[userID] == "cmode":
                     await sendMessage(userID, message, dungeon.cPoS.boss.cmdie + msg, True)
                 else:
@@ -1139,10 +1205,18 @@ async def runDungeon(userID, message):
                     curLockout = User.updateLockout("T", curLockout, int(dungeon.cPoS.ID))
                 else:
                     curLockout = User.updateLockout("F", curLockout, int(dungeon.cPoS.ID))
-                itemLooted = itm.Item.returnItem(None, str(dungeon.cPoS.treasure.rollLoot()))
-                itemGained = itemLooted.ItemStringWithNewGlobalID()
-                User.addToInventory(itemGained)
-                await sendMessage(userID, message, dungeon.cPoS.treasure.success + " \nYou recieved an item: " + itemLooted.returnFullItemName(), True)
+                itemsDropped = dungeon.cPoS.treasure.rollLoot(User.Class, dungeon.cPoS.treasure.lootamount)
+                itemsLooted = []
+                itemsGained = []
+                itemmsg = ""
+                for i in itemsDropped:
+                    itemLooted = itm.Item.returnItem(None, str(i))
+                    itemsLooted.append(itemLooted)
+                    itemGained = itemLooted.ItemStringWithNewGlobalID()
+                    itemsGained.append(itemGained)
+                    User.addToInventory(itemGained)
+                    itemmsg += " \nYou recieved item: " + itemLooted.returnFullItemName()
+                await sendMessage(userID, message, dungeon.cPoS.treasure.success + itemmsg, True)
             else:
                 await sendMessage(userID, message, dungeon.cPoS.treasure.failure, True)
         

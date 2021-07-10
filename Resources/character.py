@@ -2,6 +2,7 @@ from posixpath import split
 import Resources.imports as res
 import Resources.connection as con
 import Resources.item as itm
+import Resources.spells as spl
 class Character:
     def __init__(self, Dictionary):
         #Character specific
@@ -37,6 +38,8 @@ class Character:
         self.Lockouts = Dictionary.get("lockouts", "0X>DMVC-AAAAAAAAAAAA")
         self.Remainder = Dictionary.get("remainder", "none")
         self.Updated = Dictionary.get("updated", res.calendar.timegm(res.time.gmtime()))
+    def __hash__(self):
+        return hash(self.data)
     #Functions user can perform
     def exists(self):
         if self.Level == "none":
@@ -120,17 +123,27 @@ class Character:
     def use(self, itemList):
         item = itm.Item.returnItem(None, itemList[1])
         itemInBag = self.checkIfHasItem(item)
-        if not itemInBag:
-            return False, "Item not found in inventory."
+        if item.Slot:
+            if not self.checkIfWearingItem(item):
+                return False, "item not found worn."
+        else:
+            if not itemInBag:
+                return False, "Item not found in inventory."
         msg = ""
-        for spell, attr in zip(item.Spells, item.SpellAttrs):
-            attr["user"] = self
-            msg += spell.Function(**attr)
-            if itemList[5] != "F":
-                itemList[5] = str(int(itemList[5] ) - 1)
-        if int(itemList[5]) <= 0:
+        if not item.Spells:
+            return False, "Item cannot be used."
+        for spell, attr in zip(itemList[4].split("&"), item.SpellAttrs):
+            actualSpell = spl.Spell.findByID(spell)
+            if actualSpell.Type != "passive":
+                attr["user"] = self
+                msg += actualSpell.Function(**attr)
+                if itemList[5] != "F":
+                    itemList[5] = str(int(itemList[5]) - 1)
+        if itemList[5] != "F" and int(itemList[5]) <= 0:
+            if item.Slot:
+                self.unequip(itemList)
             self.removeFromInventory(itemList[0])
-        return True, "Used item " + item.returnFullItemName() + "." + msg
+        return True, "Used item " + item.returnFullItemName() + msg
     def inspect(self):
         msg = ""
         msg += "- Helmet: " + (itm.Item.returnItem(None, self.Helmet.split("-")[1]).returnFullItemName() if self.Helmet.split("-")[1] != "F" else "Empty") + " \n"
@@ -270,7 +283,7 @@ class Character:
     def checkIfWearingItem(self, item):
         itemString = item.returnItemString()
         splitName = itemString.split("-")
-        itemInSlot = getattr(self, item.Slot.capitalize())
+        itemInSlot = getattr(self, item.Slot)
         if itemInSlot.split("-")[0] == "F":
             return False
         if itemInSlot.split("-")[1] != splitName[1]:
@@ -302,6 +315,7 @@ class Character:
 
     #Basic Spells
     def modifyHealth(self,min,max):
+        self.updateHealth()
         healthAdded = int(res.random.uniform(min,max))
         newHealth = int(self.Health) + int(healthAdded)
         oldHealth = self.Health
@@ -353,7 +367,7 @@ class Character:
         #Setting variables that change based on chosen race and class
         if Class == "warrior":
             resources = "copper-0,iron-0,mithril-0,thorium-0"
-            armor = "9"
+            armor = "12"
             mainhand = str(itm.Item.incrementGlobalItemId()) + "-8-8-F-F-F"
             offhand = str(itm.Item.incrementGlobalItemId()) + "-9-9-F-F-F"
             if Race == "orc":
@@ -422,7 +436,7 @@ class Character:
             "exp":"0",
             "gold":"0",
             "level":"1",
-            "lockouts":"0X>DMVC-AAAAAAAAAAAAA",
+            "lockouts":"0X>DMVC-AAAAAAAAAAAAA, 0X>KARA-AAAAAAAAAAAAAAAA",
             "remainder":"0",
             "updated":res.calendar.timegm(res.time.gmtime()),
 

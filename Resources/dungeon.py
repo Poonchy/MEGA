@@ -36,6 +36,7 @@ class Boss:
         self.health = Dictionary.get("health",None)
         self.damage = Dictionary.get("damage",None)
         self.loot = Dictionary.get("loot", None)
+        self.lootamount = Dictionary.get("lootamount", None)
         self.killquote = Dictionary.get("killquote",None)
         self.diequote = Dictionary.get("diequote",None)
 
@@ -50,33 +51,43 @@ class Boss:
         self.cmkill = Dictionary.get("cmkill", None)
         self.cmdie = Dictionary.get("cmdie", None)
         self.cmloot = Dictionary.get("cmloot", None)
+        self.cmlootamount = Dictionary.get("cmlootamount", None)
 
         #hardmode
         self.hardmodecheck = Dictionary.get("hardmodecheck", None)
-    def rollLoot(self, cmode):
+    def rollLoot(self, cmode, classe, amountAllowed):
         val = 0
+        lootDist = []
         roll = random.randint(0, 100)
         loot = self.cmloot if cmode else self.loot
-        for i in loot:
-            val += loot[i]
+        for i in loot[classe]:
+            val += loot[classe][i]
             if roll < val:
-                return i
+                if len(lootDist) <= amountAllowed:
+                    lootDist.append(i)
+        return lootDist
 
 class Treasure:
     def __init__(self, Dictionary):
         self.ID = Dictionary.get("ID", None)
         self.loot = Dictionary.get("loot", None)
+        self.lootamount = Dictionary.get("lootamount", None)
         self.req = Dictionary.get("req", None)
         self.success = Dictionary.get("success", None)
         self.failure = Dictionary.get("failure", None)
-    def rollLoot(self):
+    def rollLoot(self, classe, amountAllowed):
         val = 0
+        lootDist = []
         roll = random.randint(0, 100)
         loot = self.loot
-        for i in loot:
-            val += loot[i]
+        for i in loot[classe]:
+            loot[classe]
+            print (i)
+            val += loot[classe][i]
             if roll < val:
-                return i
+                if len(lootDist) <= amountAllowed:
+                    lootDist.append(i)
+        return lootDist
 
 class Interactable:
     def __init__(self, Dictionary):

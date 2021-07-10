@@ -63,7 +63,9 @@ class Item:
         charges = self.Charges if self.Charges else "F"
         spells = ""
         if self.Spells:
+            print (self.Spells)
             for i in self.Spells:
+                print (i)
                 spells += i.ID + "&"
         else:
             spells = "F"
@@ -704,6 +706,7 @@ Items = {
         "class": "rogue"
     }),
 
+    #Tier 1 craftable items
     Item({
         "name": "Copper Helmet",
         "ID": "45",
@@ -718,8 +721,7 @@ Items = {
         "type": "Mail",
         "value": "3",
         "armor": "6",
-        "stamina": "3",
-        "stat": "1",
+        "stamina": "2",
         "class": "warrior"
     }),
     Item({
@@ -735,7 +737,7 @@ Items = {
         "type": "Mail",
         "value": "3",
         "armor": "6",
-        "stamina": "3",
+        "stamina": "1",
         "stat": "1",
         "class": "warrior"
     }),
@@ -752,8 +754,7 @@ Items = {
         "type": "Mail",
         "value": "3",
         "armor": "6",
-        "stamina": "3",
-        "stat": "1",
+        "stamina": "2",
         "class": "warrior"
     }),
     Item({
@@ -768,8 +769,7 @@ Items = {
         "slot": "Gloves",
         "type": "Mail",
         "value": "3",
-        "armor": "5",
-        "stamina": "2",
+        "armor": "6",
         "stat": "1",
         "class": "warrior"
     }),
@@ -785,9 +785,8 @@ Items = {
         "slot": "Waist",
         "type": "Mail",
         "value": "3",
-        "armor": "5",
-        "stamina": "2",
-        "stat": "1",
+        "armor": "6",
+        "stamina": "1",
         "class": "warrior"
     }),
     Item({
@@ -803,8 +802,7 @@ Items = {
         "type": "Mail",
         "value": "3",
         "armor": "6",
-        "stamina": "3",
-        "stat": "1",
+        "stamina": "2",
         "class": "warrior"
     }),
     Item({
@@ -819,8 +817,7 @@ Items = {
         "slot": "Feet",
         "type": "Mail",
         "value": "3",
-        "armor": "5",
-        "stamina": "2",
+        "armor": "6",
         "stat": "1",
         "class": "warrior"
     }),
@@ -836,15 +833,30 @@ Items = {
         "slot": "Mainhand",
         "type": "Sword",
         "value": "3",
-        "stamina": "3",
         "stat": "2",
-        "damage": "4 - 6",
+        "damage": "2 - 5",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Copper Buckler",
+        "ID": "53",
+        "rarity": "Uncommon",
+        "reagents": "4-copper,",
+
+        "modelID": "52",
+        "colors": "201 128 60, 164 95 61",
+
+        "slot": "Offhand",
+        "type": "Shield",
+        "value": "3",
+        "armor": "6",
+        "stamina": "2",
         "class": "warrior"
     }),
 
     Item({
         "name": "Linen Hat",
-        "ID": "53",
+        "ID": "54",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -855,8 +867,7 @@ Items = {
         "slot": "Helmet",
         "type": "Cloth",
 
-        "stamina": "1",
-        "stat": "3",
+        "stat": "1",
 
         "value": "1",
         "armor": "2",
@@ -864,7 +875,7 @@ Items = {
     }),
     Item({
         "name": "Linen Shoulderpads",
-        "ID": "54",
+        "ID": "55",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -875,7 +886,7 @@ Items = {
         "type": "Cloth",
 
         "stamina": "1",
-        "stat": "3",
+        "stat": "1",
 
         "value": "1",
         "armor": "2",
@@ -883,7 +894,7 @@ Items = {
     }),
     Item({
         "name": "Linen Robe",
-        "ID": "55",
+        "ID": "56",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -893,8 +904,7 @@ Items = {
         "slot": "Chest",
         "type": "Cloth",
 
-        "stamina": "1",
-        "stat": "3",
+        "stat": "2",
 
         "value": "1",
         "armor": "2",
@@ -902,7 +912,7 @@ Items = {
     }),
     Item({
         "name": "Linen Gloves",
-        "ID": "56",
+        "ID": "57",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -912,8 +922,7 @@ Items = {
         "slot": "Gloves",
         "type": "Cloth",
 
-        "stamina": "1",
-        "stat": "2",
+        "stat": "1",
 
         "value": "1",
         "armor": "2",
@@ -921,7 +930,7 @@ Items = {
     }),
     Item({
         "name": "Linen Sash",
-        "ID": "57",
+        "ID": "58",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -932,7 +941,6 @@ Items = {
         "type": "Cloth",
 
         "stamina": "1",
-        "stat": "2",
 
         "value": "1",
         "armor": "2",
@@ -940,7 +948,7 @@ Items = {
     }),
     Item({
         "name": "Linen Pants",
-        "ID": "58",
+        "ID": "59",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -950,8 +958,7 @@ Items = {
         "slot": "Legs",
         "type": "Cloth",
 
-        "stamina": "1",
-        "stat": "3",
+        "stat": "2",
 
         "value": "1",
         "armor": "2",
@@ -959,7 +966,7 @@ Items = {
     }),
     Item({
         "name": "Linen Slippers",
-        "ID": "59",
+        "ID": "60",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
@@ -969,8 +976,7 @@ Items = {
         "slot": "Feet",
         "type": "Cloth",
 
-        "stamina": "1",
-        "stat": "2",
+        "stat": "1",
 
         "value": "1",
         "armor": "2",
@@ -988,13 +994,630 @@ Items = {
         "slot": "Mainhand",
         "type": "Staff",
 
+        "stat": "2",
+
+        "value": "1",
+        "damage": "1-1",
+        "class": "mage"
+    }),
+
+    Item({
+        "name": "Embossed Cap",
+        "ID": "61",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "18",
+        "colors": "107 71 62, 121 85 72",
+        "showHair": "no",
+
+        "slot": "Helmet",
+        "type": "Leather",
+        "value": "3",
+        "armor": "4",
+        "stamina": "1",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Shouldercap",
+        "ID": "62",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "19",
+        "colors": "107 71 62, 121 85 72",
+
+        "slot": "Shoulders",
+        "type": "Leather",
+        "value": "3",
+        "armor": "4",
+        "stamina": "1",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Jacket",
+        "ID": "63",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "20",
+        "colors": "107 71 62, 121 85 72",
+
+        "slot": "Chest",
+        "type": "leather",
+        "value": "3",
+        "armor": "4",
+        "stamina": "1",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Gloves",
+        "ID": "64",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "21",
+        "colors": "107 71 62, 121 85 72",
+
+        "slot": "Gloves",
+        "type": "leather",
+        "value": "3",
+        "armor": "4",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Buckle",
+        "ID": "49",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "65",
+        "colors": "61 41 35, 82 56 49, 61 61 61",
+
+        "slot": "Waist",
+        "type": "leather",
+        "value": "3",
+        "armor": "4",
+        "stamina": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Pants",
+        "ID": "66",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "23",
+        "colors": "107 71 62, 121 85 72",
+
+        "slot": "Legs",
+        "type": "leather",
+        "value": "3",
+        "armor": "4",
+        "stamina": "1",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Boots",
+        "ID": "67",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "24",
+        "colors": "107 71 62, 121 85 72",
+
+        "slot": "Feet",
+        "type": "leather",
+        "value": "3",
+        "armor": "4",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Dagger",
+        "ID": "68",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "25",
+        "colors": "133 133 133, 107 107 107, 179 18 7",
+
+        "slot": "Mainhand",
+        "type": "Dagger",
+        "value": "3",
+        "stat": "1",
+        "stamina": "1",
+        "damage": "2 - 4",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Embossed Shiv",
+        "ID": "69",
+        "rarity": "Uncommon",
+        "reagents": "4-light,",
+
+        "modelID": "52",
+        "colors": "201 128 60, 164 95 61",
+
+        "slot": "Offhand",
+        "type": "Dagger",
+        "value": "3",
+        "damage": "2 - 4",
+        "stamina": "1",
+        "stat": "1",
+        "class": "rogue"
+    }),
+
+    #Deadmines loot
+    Item({
+        "name": "Sentry Helmet",
+        "ID": "70",
+        "rarity": "Rare",
+
+        "modelID": "70",
+        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "showHair": "no",
+        "level":"10",
+
+        "slot": "Helmet",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
+        "stamina": "3",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Shoulderguards",
+        "ID": "71",
+        "rarity": "Rare",
+
+        "modelID": "71",
+        "colors": "201 128 60, 144 90 40",
+        "level":"10",
+
+        "slot": "Shoulders",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
         "stamina": "2",
+        "stat": "1",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Armor",
+        "ID": "72",
+        "rarity": "Rare",
+
+        "modelID": "72",
+        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "level":"10",
+
+        "slot": "Chest",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
+        "stamina": "3",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Gloves",
+        "ID": "73",
+        "rarity": "Rare",
+
+        "modelID": "73",
+        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "level":"10",
+
+        "slot": "Gloves",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
+        "stat": "2",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Waistguard",
+        "ID": "74",
+        "rarity": "Rare",
+
+        "modelID": "74",
+        "colors": "181 108 40, 104 35 1",
+        "level":"10",
+
+        "slot": "Waist",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
+        "stamina": "2",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Legguards",
+        "ID": "75",
+        "rarity": "Rare",
+
+        "modelID": "75",
+        "colors": "201 128 60, 144 90 40",
+        "level":"10",
+
+        "slot": "Legs",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
+        "stamina": "3",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Sabatons",
+        "ID": "76",
+        "rarity": "Rare",
+
+        "modelID": "76",
+        "colors": "201 128 60, 144 90 40",
+        "level":"10",
+
+        "slot": "Feet",
+        "type": "Mail",
+        "value": "3",
+        "armor": "9",
+        "stamina":"2",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Sword",
+        "ID": "77",
+        "rarity": "Rare",
+
+        "modelID": "77",
+        "colors": "201 128 60, 164 95 61",
+        "level":"10",
+
+        "slot": "Mainhand",
+        "type": "Sword",
+        "value": "3",
+        "stat": "3",
+        "damage": "4 - 7",
+        "class": "warrior"
+    }),
+    Item({
+        "name": "Sentry Buckler",
+        "ID": "78",
+        "rarity": "Rare",
+
+        "modelID": "78",
+        "colors": "201 128 60, 164 95 61",
+        "level":"10",
+
+        "slot": "Offhand",
+        "type": "Shield",
+        "value": "3",
+        "armor": "9",
+        "stamina": "3",
+        "class": "warrior"
+    }),
+
+    Item({
+        "name": "Apothecary Hat",
+        "ID": "79",
+        "rarity": "Rare",
+
+        "modelID": "79",
+        "colors": "220 210 200, 250 240 230",
+        "showHair": "no",
+        "level":"10",
+
+        "slot": "Helmet",
+        "type": "Cloth",
+
+        "stat": "3",
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Shoulderpads",
+        "ID": "80",
+        "rarity": "Rare",
+
+        "modelID": "80",
+        "colors": "220 210 200, 250 240 230",
+        "level":"10",
+
+        "slot": "Shoulders",
+        "type": "Cloth",
+
+        "stamina": "1",
+        "stat": "2",
+
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Robe",
+        "ID": "81",
+        "rarity": "Rare",
+
+        "modelID": "81",
+        "colors": "220 210 200, 250 240 230",
+        "level":"10",
+
+        "slot": "Chest",
+        "type": "Cloth",
+
+        "stat": "3",
+
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Gloves",
+        "ID": "82",
+        "rarity": "Rare",
+
+        "modelID": "82",
+        "colors": "225 216 207, 195 186 187",
+        "level":"10",
+
+        "slot": "Gloves",
+        "type": "Cloth",
+
+        "stat": "2",
+
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Sash",
+        "ID": "83",
+        "rarity": "Rare",
+
+        "modelID": "83",
+        "colors": "195 186 187, 225 216 207, 100 100 100",
+        "level":"10",
+
+        "slot": "Waist",
+        "type": "Cloth",
+
+        "stamina": "2",
+
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Pants",
+        "ID": "84",
+        "rarity": "Rare",
+
+        "modelID": "84",
+        "colors": "220 210 200, 250 240 230",
+        "level":"10",
+
+        "slot": "Legs",
+        "type": "Cloth",
+
+        "stat": "3",
+
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Slippers",
+        "ID": "85",
+        "rarity": "Rare",
+
+        "modelID": "85",
+        "colors": "195 186 187, 225 216 207",
+        "level":"10",
+
+        "slot": "Feet",
+        "type": "Cloth",
+
+        "stat": "2",
+
+        "value": "1",
+        "armor": "3",
+        "class": "mage"
+    }),
+    Item({
+        "name": "Apothecary Staff",
+        "ID": "86",
+        "rarity": "Rare",
+
+        "modelID": "86",
+        "colors": "121 85 72, 225 216 207",
+        "level":"10",
+
+        "slot": "Mainhand",
+        "type": "Staff",
+
         "stat": "3",
 
         "value": "1",
         "damage": "1-1",
         "class": "mage"
     }),
+
+    Item({
+        "name": "Bandit's Cap",
+        "ID": "87",
+        "rarity": "Rare",
+
+        "modelID": "87",
+        "colors": "107 71 62, 121 85 72",
+        "showHair": "no",
+        "level":"10",
+
+        "slot": "Helmet",
+        "type": "Leather",
+        "value": "3",
+        "armor": "6",
+        "stamina": "2",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit Shouldercap",
+        "ID": "88",
+        "rarity": "Rare",
+
+        "modelID": "88",
+        "colors": "107 71 62, 121 85 72",
+        "level":"10",
+
+        "slot": "Shoulders",
+        "type": "Leather",
+        "value": "3",
+        "armor": "6",
+        "stamina": "1",
+        "stat": "2",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Jacket",
+        "ID": "89",
+        "rarity": "Rare",
+
+        "modelID": "89",
+        "colors": "107 71 62, 121 85 72",
+        "level":"10",
+
+        "slot": "Chest",
+        "type": "leather",
+        "value": "3",
+        "armor": "6",
+        "stamina": "2",
+        "stat": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Gloves",
+        "ID": "90",
+        "rarity": "Rare",
+
+        "modelID": "90",
+        "colors": "107 71 62, 121 85 72",
+        "level":"10",
+
+        "slot": "Gloves",
+        "type": "leather",
+        "value": "3",
+        "armor": "6",
+        "stat": "2",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Buckle",
+        "ID": "91",
+        "rarity": "Rare",
+
+        "modelID": "91",
+        "colors": "61 41 35, 82 56 49, 61 61 61",
+        "level":"10",
+
+        "slot": "Waist",
+        "type": "leather",
+        "value": "3",
+        "armor": "6",
+        "stamina": "2",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Pants",
+        "ID": "92",
+        "rarity": "Rare",
+
+        "modelID": "92",
+        "colors": "107 71 62, 121 85 72",
+        "level":"10",
+
+        "slot": "Legs",
+        "type": "leather",
+        "value": "3",
+        "armor": "6",
+        "stamina": "1",
+        "stat": "2",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Boots",
+        "ID": "93",
+        "rarity": "Rare",
+
+        "modelID": "93",
+        "colors": "107 71 62, 121 85 72",
+        "level":"10",
+
+        "slot": "Feet",
+        "type": "leather",
+        "value": "3",
+        "armor": "6",
+        "stat": "1",
+        "stamina": "1",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Dagger",
+        "ID": "94",
+        "rarity": "Rare",
+
+        "modelID": "94",
+        "colors": "133 133 133, 107 107 107, 179 18 7",
+        "level":"10",
+
+        "slot": "Mainhand",
+        "type": "Dagger",
+        "value": "3",
+        "stat": "3",
+        "damage": "3 - 6",
+        "class": "rogue"
+    }),
+    Item({
+        "name": "Bandit's Shiv",
+        "ID": "95",
+        "rarity": "Rare",
+
+        "modelID": "95",
+        "colors": "201 128 60, 164 95 61",
+        "level":"10",
+
+        "slot": "Offhand",
+        "type": "Dagger",
+        "value": "3",
+        "damage": "3 - 6",
+        "stamina": "3",
+        "class": "rogue"
+    }),
+
+    Item({
+        "name": "Brotherhood Medallion",
+        "ID": "96",
+        "rarity": "Rare",
+
+        "modelID": "95",
+        "colors": "201 128 60, 164 95 61",
+        "level":"10",
+
+        "slot": "Trinket",
+        "value": "3",
+        "class": "all",
+        "spells": [spl.Spell.findByID("4"), spl.Spell.findByID("5")],
+        "spellattrs": [{"A":"A"}, {"B":"B"}],
+        
+        "flavor":"Engraved on the bottom you can see, 'E.V. + V.C.'"
+    }),
+
+
+
     
     Item({
         "name": "Elementium Helmet",
@@ -1050,6 +1673,14 @@ Items = {
         "stat": "40",
         "class": "rogue"
     }),
+    Item({
+        "name": "Minor Health Potion",
+        "ID": "1000",
+        "rarity": "Common",
+        "spells":[spl.Spell.findByID("6")],
+        "spellattrs": [{"health":30}],
+        "class": "all"
+    }),
 
 
     Item({
@@ -1061,10 +1692,30 @@ Items = {
         "charges":"1"
     }),
     Item({
-        "name": "Fragmented Key",
+        "name": "Fragmented Key Blade",
         "ID": "10000",
         "rarity": "Rare",
         "flavor":"These fragments are ethereal, broken beyond repair. Perhaphs there is someone who can help you fix it."
+    }),
+    Item({
+        "name": "Fragmented Key Bow",
+        "ID": "10002",
+        "rarity": "Rare",
+        "flavor":"These fragments are ethereal, broken beyond repair. Perhaphs there is someone who can help you fix it."
+    }),
+    Item({
+        "name": "Essence Of Karazhan",
+        "ID": "10003",
+        "rarity": "Rare",
+        "flavor":"Holding onto this makes gives you the chills. It's presence creates the winds of Deadwind Pass. Perhaphs there is someone who can make use of this"
+    }),
+    Item({
+        "name": "Key To Karazhan",
+        "ID": "10004",
+        "rarity": "Epic",
+        "spells": [spl.Spell.findByID("2")],
+        "spellattrs": [{"dungeon":"KARA"}],
+        "charges":"1"
     })
 }
 

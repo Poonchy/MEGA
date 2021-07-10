@@ -55,12 +55,11 @@ rhakazor = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{83:40},
+        "rogue":{91:40},
+        "warrior":{74:40}
     },
+    "lootamount":1,
     "hardmodecheck":hardMode,
     "killquote":"%BOSS Rhahk\'Zor ) strikes you down with his hammer, cackling as he scoffs, \"Is this best heroes can do? Hah!\" \n \nWith that, your run ends. Rest up before trying again!",
     "diequote":"After an intense fight, %BOSS Rhahk'zor ) goes down! He mutters, \"VanCleef not gonna be happy when he find out!\" with his dying breath."
@@ -70,17 +69,16 @@ johnson = Boss({
     "name":"Miner Johnson",
     "level":"19",
     "type":"rare",
-    "chance":"80",
+    "chance":"50",
     "suprise":" \n \nSuddenly, a hole opens up in front of you! A rugged, tall miner climbs from the hole and turns to you. \n \nYou now face Miner Johnson. Will you engage him? Or flee and live another day?",
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{1000:100},
+        "rogue":{95:40},
+        "warrior":{78:40}
     },
+    "lootamount":1,
     "hardmodecheck":noHM,
     "killquote":"%BOSS Rhahk\'Zor ) strikes you down with his hammer, cackling as he scoffs, \"Is this best heroes can do? Hah!\" \n \nWith that, your run ends. Rest up before trying again!",
     "diequote":"After an intense fight, %BOSS Rhahk'zor ) goes down! He mutters, \"VanCleef not gonna be happy when he find out!\" with his dying breath."
@@ -93,12 +91,11 @@ sneed = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{82:40},
+        "rogue":{90:40},
+        "warrior":{73:40}
     },
+    "lootamount":1,
     "hardmodecheck":hardMode,
     "killquote":"As %BOSS Sneed ) cuts you down, you hear him guffaw, \"Who said you couldn't mix business with pleasure? Now get out of my sight, you buffooning oaf!\" \n \nWith that, your run ends. Rest up before trying again!",
     "diequote":"With all the might you can muster, you rip the Shredder to shreds. Sneed squirms as he says, \"VanCleef can't replace me! I'm Sneed! The... \" and with those words, he breathes his last."
@@ -111,19 +108,17 @@ gilnid = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{85:40},
+        "rogue":{93:40},
+        "warrior":{76:40}
     },
+    "lootamount":1,
     "cmloot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{85:70},
+        "rogue":{93:70},
+        "warrior":{76:70}
     },
+    "cmlootamount":1,
     "killquote":"Overwhelmed by harvest golems, you\'re shot down by %BOSS Gilnid ) as he sneers, \"You're no threat to the Brotherhood! Now leave before you're our next weapon rack!\" \n \nWith that, your run ends. Rest up before trying again!",
 
     "diequote":"Putting up the best fight he can, %BOSS Gilnid ) finally falls as he squawks, \"You\'ll never get to VanCleef! Never! Hahaha...\" and dies..",
@@ -148,12 +143,11 @@ smite = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{86:40},
+        "rogue":{94:40},
+        "warrior":{77:40}
     },
+    "lootamount":1,
     "hardmodecheck":hardMode,
     "killquote":"After beating you with his incredible arsenal, %BOSS Smite ) simply looks back and spits on you as he walks back on board. \n \nWith that, your run ends. Rest up before trying again!",
     "diequote":"As %BOSS Mr.Smite ) duels you to his final breath, he mutters, \"You landlubbers are tougher than I thought. I should have improvised.\" \n \nHe collapses to the floor, and the way to the dock is cleared."
@@ -166,12 +160,11 @@ cookie = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{84:40},
+        "rogue":{92:40},
+        "warrior":{75:40}
     },
+    "lootamount":1,
     "hardmodecheck":noHM,
     "killquote":"As %BOSS Cookie ) finishes beating you with his rolling pin, he leaves as a gang of bandits come and finish you off. \n \n\"We\'ll use you as an example to the others.\" one says, as he stabs your throat. \n \nWith that, your run ends. Rest up before trying again!",
     "diequote":"As you quickly defeat %BOSS Cookie ) , you see a band of thugs run towards you. You hide and avoid them, waiting for the area to clear up."
@@ -184,15 +177,21 @@ vancleef = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{79:40},
+        "rogue":{87:40},
+        "warrior":{70:40}
     },
+    "lootamount":1,
     "cmloot":{
-        10000:100
+        
+        "mage":{10000:100,
+        81:40},
+        "rogue":{10000:100,
+        89:40},
+        "warrior":{10000:100,
+        72:40}
     },
+    "cmlootamount":2,
     "killquote":"%BOSS VanCleef ) mercilessly cuts you down with his sabers. \n \nHe turns around and smirks as he says, \"You're the guy that slaughtered my crew? I expected so much more.\" \n \nWith that, your run ends. How pathetic. Rest up before trying again!",
     "diequote":"You strike %BOSS VanCleef ) down with all your might. The head of %BOSS Edwin VanCleef ) rolls around on the floor and off the boat. \n \nThe leader of the Brotherhood is no more.",
 
@@ -214,12 +213,11 @@ greenskin = Boss({
     "health":"200",
     "damage":"4-5",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{80:40},
+        "rogue":{88:40},
+        "warrior":{71:40}
     },
+    "lootamount":1,
     "hardmodecheck":hardMode,
     "killquote":"%BOSS Greenskin ) skewers you with his spear, snickering to himself. \n \n\"What did ye hope to accomplish against the cap'n? Win? Pathetic! To Davy Jones's locker with you, imbecile!\" \n \nWith that, your run ends. Rest up before trying again!",
     "diequote":"As you strike down %BOSS Captain Greenskin ) , he yells \"VanCleef! They, they have... arrived. The cap'n... didn't make it!\""
@@ -229,12 +227,12 @@ greenskin = Boss({
 treasure1 = Treasure({
     "ID":"1",
     "loot":{
-        51:20,
-        52:20,
-        53:20,
-        54:20,
-        55:20
+        "mage":{1000:100},
+        "rogue":{1000:100},
+        "warrior":{1000:100}
+        
     },
+    "lootamount":1,
     "req": checkKey,
     "success":"Clink! With the key in place, the chest opens wide.",
     "failure":"No matter how much you try to budge it, the chest wont open. It requires a key... maybe there's one somewhere nearby."
@@ -429,11 +427,3 @@ room10.right = room3
 room11.right = room5
 room12.right = room6
 room12.left = room7
-
-Deadmines = Dungeon([
-    room1, room2, room3, room4, room5, room6, room7, room8, room9, room10, room11, room12
-],{
-    "intro":"You\'ve reached the entrance to The Deadmines, do you wish to enter or flee?",
-    "attunefail":"You try to open the door, but no matter how hard you try, the door will not budge. It\'s locked, and the key is nowhere in sight. \n \nOut of the corner of your eye, you catch a glimpse of a merchant, skulking around. \n%NPC Defias Profiteer): ‘Trying to get in there, are we? Not without this here key. You want it? Pay up.’ \n \nYou can view what the merchant sells by typing \'Mega Shop Deadmines\'.",
-    "hardmodecheck": hardMode
-})
