@@ -6,11 +6,11 @@ import Resources.spells as spl
 class Character:
     def __init__(self, Dictionary):
         #Character specific
-        self.ID = Dictionary.get("ID", "none")
-        self.Name = Dictionary.get("name", "none")
-        self.Race = Dictionary.get("race", "none")
-        self.Class = Dictionary.get("class", "none")
-        self.Inventory = Dictionary.get("inventory", "none")
+        self.ID = Dictionary.get("ID", None)
+        self.Name = Dictionary.get("name", None)
+        self.Race = Dictionary.get("race", None)
+        self.Class = Dictionary.get("class", None)
+        self.Inventory = Dictionary.get("inventory", "")
         self.Resources = Dictionary.get("resources", "")
 
         #Equipment
@@ -24,25 +24,25 @@ class Character:
         self.Trinket = Dictionary.get("trinket", "F-F-F-F-F-F")
         self.Mainhand = Dictionary.get("mainhand", "F-F-F-F-F-F")
         self.Offhand = Dictionary.get("offhand", "F-F-F-F-F-F")
+        self.Buffs = Dictionary.get("buffs", "")
 
         #Stats
-        self.Stamina = Dictionary.get("stamina", "none")
-        self.Armor = Dictionary.get("armor", "none")
-        self.Stat = Dictionary.get("stat", "none")
-        self.Health = Dictionary.get("health", "none")
-        self.Exp = Dictionary.get("exp", "none")
-        self.Level = Dictionary.get("level", "none")
-        self.Gold = Dictionary.get("gold", "none")
+        self.Stamina = Dictionary.get("stamina", None)
+        self.Armor = Dictionary.get("armor", None)
+        self.Stat = Dictionary.get("stat", None)
+        self.Health = Dictionary.get("health", None)
+        self.Exp = Dictionary.get("exp", None)
+        self.Level = Dictionary.get("level", None)
+        self.Gold = Dictionary.get("gold", None)
 
         #Misc
         self.Lockouts = Dictionary.get("lockouts", "0X>DMVC-AAAAAAAAAAAA")
-        self.Remainder = Dictionary.get("remainder", "none")
+        self.Remainder = Dictionary.get("remainder", None)
         self.Updated = Dictionary.get("updated", res.calendar.timegm(res.time.gmtime()))
-    def __hash__(self):
-        return hash(self.data)
+
     #Functions user can perform
     def exists(self):
-        if self.Level == "none":
+        if self.Level == None:
             return False
         return True
     def updateHealth(self):
@@ -75,15 +75,30 @@ class Character:
         self.updateSelf("health", str(str(currentHealth)))
         self.updateSelf("updated", str(timeNow))
         self.updateSelf("remainder", str(remainder))
+    def returnEquipment(self):
+        equipped = []
+        equipped.append(self.Helmet) if self.Helmet.split("-")[0] != "F" else None
+        equipped.append(self.Shoulders) if self.Shoulders.split("-")[0] != "F" else None
+        equipped.append(self.Chest) if self.Chest.split("-")[0] != "F" else None
+        equipped.append(self.Gloves) if self.Gloves.split("-")[0] != "F" else None
+        equipped.append(self.Waist) if self.Waist.split("-")[0] != "F" else None
+        equipped.append(self.Legs) if self.Legs.split("-")[0] != "F" else None
+        equipped.append(self.Feet) if self.Feet.split("-")[0] != "F" else None
+        equipped.append(self.Mainhand) if self.Mainhand.split("-")[0] != "F" else None
+        equipped.append(self.Offhand) if self.Offhand.split("-")[0] != "F" else None
+        equipped.append(self.Trinket) if self.Trinket.split("-")[0] != "F" else None
+        return equipped
 
     #Gear functions
     def equip(self, itemList):
         item = itm.Item.returnItem(None, itemList[1])
-        if item.Slot == "none":
+        if item.Slot == None:
             return False, "Item cannot be equipped."
         itemInBag = self.checkIfHasItem(item)
         if not itemInBag:
             return False, "Item not found in inventory."
+        if item.Level and int(item.Level) > int(self.Level):
+            return "You're not high enough level to equip that item."
         itemInSlot = getattr(self, item.Slot.capitalize())
         if itemInSlot.split("-")[1] != "F":
             self.unequip(itemInSlot.split("-"))
@@ -97,7 +112,7 @@ class Character:
         return True, "Succesfully equiped: " + item.returnFullItemName()
     def unequip(self, itemList):
         item = itm.Item.returnItem(None, itemList[1])
-        if item.Slot == "F" or item.Slot == "none":
+        if item.Slot == "F" or item.Slot == None:
             return False, "Item cannot be unequipped."
         itemInSlot = self.checkIfWearingItem(item)
         if not itemInSlot:
@@ -111,7 +126,7 @@ class Character:
         return True, "Succesfully unequiped: " + item.returnFullItemName()
     def sell(self, itemList):
         item = itm.Item.returnItem(None, itemList[1])
-        if item.Slot == "none":
+        if item.Slot == None:
             return False, "Item cannot be equipped."
         itemInBag = self.checkIfHasItem(item)
         if not itemInBag:
@@ -134,7 +149,7 @@ class Character:
             return False, "Item cannot be used."
         for spell, attr in zip(itemList[4].split("&"), item.SpellAttrs):
             actualSpell = spl.Spell.findByID(spell)
-            if actualSpell.Type != "passive":
+            if actualSpell.Type == "active":
                 attr["user"] = self
                 msg += actualSpell.Function(**attr)
                 if itemList[5] != "F":
@@ -158,6 +173,7 @@ class Character:
         msg += "- Offhand: " + (itm.Item.returnItem(None, self.Offhand.split("-")[1]).returnFullItemName() if self.Offhand.split("-")[1] != "F" else "Empty")
         return msg
 
+
     #Combat
     def train(self):
         self.updateHealth()
@@ -170,80 +186,111 @@ class Character:
         else:
             self.updateSelf("health",self.Health)
             #Dispense the gold and experience
-            expCalc = round(res.math.sqrt(mobLevel) * 5)
-            expGained = self.modifyExp(expCalc,expCalc)
-            goldGained = self.modifyGold(2 + mobLevel, 5 + mobLevel)
+            expCalc = round((res.math.sqrt(mobLevel) * 8) * ((.5 * mobLevel) + 1))
+            expGained = self.modifyExp(expCalc, expCalc)
+            goldGained = self.modifyGold(mobLevel* ((.5 * mobLevel) + 1), mobLevel * 2 * ((.5 * mobLevel) + 1))
             ifDinged = self.checkLevelUp(True)
             completeMsg = "You succesfully completed your training and lost " + str(damageTakenOverall) + " health. \n \nYou gained " + str(expGained) + " EXP and earned " + str(goldGained) + " gold. \n" + ifDinged + " \nNow standing at " + str(self.Health) + " health remaining, would you like to keep training?"
             return True, completeMsg
+    
+    
+    
+    
     def combat(self, boss = None, hardmode = False):
         #Create a dummy mob randomized by player level.
+        class Mob:
+            ()
+        mob = Mob
         if not boss:
-            mobLevel = max(1, res.random.randint(int(self.Level) - 1, int(self.Level) + 1))
-            mobHealth = 40 + (10 * int(mobLevel))
-            mobDamage = [round(9 + (9 * .1 * res.math.sqrt(mobLevel))),round(14 + (14 * .1 * res.math.sqrt(mobLevel)))]
+            mob.mobLevel = max(1, res.random.randint(int(self.Level) - 1, int(self.Level) + 1))
+            mob.mobHealth = 40 + (10 * int(mob.mobLevel)) * ((.1 * mob.mobLevel) + 1)
+            mob.mobDamage = [round(((.1 * mob.mobLevel) + 1) * (9 + (9 * .1 * res.math.sqrt(mob.mobLevel)))),round(((.1 * mob.mobLevel) + 1)*(14 + (14 * .1 * res.math.sqrt(mob.mobLevel))))]
         else:
             if hardmode:
-                mobLevel = int(boss.level)
-                mobHealth = int(boss.health) + 200
+                mob.mobLevel = int(boss.level)
+                mob.mobHealth = round(int(boss.health) * 1.10)
                 temp = boss.damage.split("-")
-                mobDamage = [int(temp[0]) + 5, int(temp[1]) + 5]
+                mob.mobDamage = [round(int(temp[0])) * 1.10, round(int(temp[1])) * 1.10]
             else:
-                mobLevel = int(boss.level)
-                mobHealth = int(boss.health)
+                mob.mobLevel = int(boss.level)
+                mob.mobHealth = int(boss.health)
                 temp = boss.damage.split("-")
-                mobDamage = [int(temp[0]), int(temp[1])]
-        
+                mob.mobDamage = [int(temp[0]), int(temp[1])]
+    
         #Sets the correct main damage stat and weapon scaling
         if self.Class == "mage":
-            wepScaling = .2
+            self.wepScaling = .2
         elif self.Class == "warrior":
-            wepScaling = 1.8
+            self.wepScaling = 1.8
         elif self.Class == "rogue":
-            wepScaling = 2
+            self.wepScaling = 2
 
         #Look for if user has a weapon and retrieves it's damage
-        mainhandDamage = self.returnWeaponDamage(self.Mainhand)
-        offhandDamage = self.returnWeaponDamage(self.Offhand)
+        self.mainhandDamage = self.returnWeaponDamage(self.Mainhand)
+        self.offhandDamage = self.returnWeaponDamage(self.Offhand)
 
         #Stats tracked for when fighting a dummy.
         damageTakenOverall = 0
+        procs = []
+        onhits = []
+        for i in self.Buffs.split(","):
+            if i:
+                if i.type == "proc":
+                    procs.append(i)
+                elif i.type == "onhit":
+                    onhits.append(i)
+        self.stunned = False
+        mob.stunned = False
+        while int(self.Health) > 0 and mob.mobHealth > 0:
+            if not self.stunned:
+                #Randomizes user's weapon damage
+                self.wepDamage = res.random.uniform(int(self.mainhandDamage[0]), int(self.mainhandDamage[1]))
+                self.ohDamage = 0
+                #Calculates your weapon damage differently if you're a rogue or mage
+                if self.Class == "rogue":
+                    self.ohDamage = res.random.uniform(int(self.offhandDamage[0]), int(self.offhandDamage[1]))
+                elif self.Class == "mage":
+                    self.wepDamage += res.random.randint(round(int(self.Stat)/5),round(int(self.Stat)/3))
 
-        while int(self.Health) > 0 and mobHealth > 0:
-            #Randomizes user's weapon damage
-            wepDamage = res.random.uniform(int(mainhandDamage[0]), int(mainhandDamage[1]))
-            ohDamage = 0
-            #Calculates your weapon damage differently if you're a rogue or mage
-            if self.Class == "rogue":
-                ohDamage = res.random.uniform(int(offhandDamage[0]), int(offhandDamage[1]))
-            elif self.Class == "mage":
-                wepDamage += res.random.randint(round(int(self.Stat)/4),round(int(self.Stat)/2))
+                #Puts your stats to scale your damage dealt
+                self.statScaling = res.math.sqrt((int(self.Stat)- self.wepDamage) * (self.wepDamage * self.wepScaling))
+                self.damageDealt = round(self.wepDamage * self.statScaling)
 
-            #Puts your stats to scale your damage dealt
-            statScaling = res.math.sqrt((int(self.Stat)- wepDamage) * (wepDamage * wepScaling))
-            damageDealt = round(wepDamage * statScaling)
+                #adds offhand damage if there was any and deal damage
+                if self.ohDamage > 0:
+                    self.damageDealt += .5 * round(self.ohDamage * self.statScaling)
 
-            #adds offhand damage if there was any and deal damage
-            if ohDamage > 0:
-                damageDealt += .5 * round(ohDamage * statScaling)
-            mobHealth -= damageDealt
+                for i in procs:
+                    i.Function({"user": self, "mob":mob})
+                mob.mobHealth -= self.damageDealt
+            else:
+                self.stunned = False
 
             #Checks if mob survived the hit to retaliate
-            if mobHealth > 0:
-                #Randomize damage dealt
-                mobDamageDealt = res.random.uniform(mobDamage[0], mobDamage[1])
+            if mob.mobHealth > 0:
+                if not mob.stunned:
+                    #Randomize damage dealt
+                    mob.mobDamageDealt = res.random.uniform(mob.mobDamage[0], mob.mobDamage[1])
 
-                #Creates a modifier for damage reduction based on armor
-                dr = mobDamageDealt / (mobDamageDealt + int(self.Armor))
-                damageTaken = round (mobDamageDealt * dr)
-                self.Health = str(int(self.Health) - damageTaken)
-                damageTakenOverall += damageTaken
-        return damageTakenOverall, mobLevel
+                    #Creates a modifier for damage reduction based on armor
+                    self.dr = mob.mobDamageDealt / (mob.mobDamageDealt + int(self.Armor))
+                    self.damageTaken = round (mob.mobDamageDealt * self.dr)
+                    for i in procs:
+                        i.Function({"user": self, "mob":mob})
+                    self.Health = str(int(self.Health) - self.damageTaken)
+                    damageTakenOverall += self.damageTaken
+                else:
+                    mob.stunned = False
+        return damageTakenOverall, mob.mobLevel
+    
+    
+    
+    
     def returnWeaponDamage(self, item):
         if item.split("-")[1] == "F":
             return [1,1]
         weapon = itm.Item.returnItem(None, item.split("-")[1])
-        if weapon.ID != "none" and weapon.Type != "Shield":
+        if weapon.ID != None and weapon.Type != "Shield":
             damageRange = list(map(int, weapon.Damage.split("-")))
         else:
             damageRange = [1,1]

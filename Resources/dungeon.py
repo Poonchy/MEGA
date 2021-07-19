@@ -81,8 +81,6 @@ class Treasure:
         roll = random.randint(0, 100)
         loot = self.loot
         for i in loot[classe]:
-            loot[classe]
-            print (i)
             val += loot[classe][i]
             if roll < val:
                 if len(lootDist) <= amountAllowed:
