@@ -1,4 +1,4 @@
 .env
 __pycache__
-database
-/database
+database.sql
+__init__.py
