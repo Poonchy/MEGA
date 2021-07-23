@@ -15,7 +15,6 @@ import numpy as np
 import requests
 import string
 from collections import defaultdict
-from decouple import config
 from discord_components import DiscordComponents, Button, Select, SelectOption, ActionRow
 from discord.ext.commands import Bot
 def mixedCase(*args):

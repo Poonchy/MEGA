@@ -1,11 +1,11 @@
 import Resources.imports as res
-TOKEN = res.config("TOKEN")
+TOKEN = res.os.environ.get("TOKEN")
 def openConn():
     conn = res.pymysql.connect(
-        host=res.config("HOST"),
-        user=res.config("USER"),
-        password=res.config("PASSWORD"),
-        database=res.config("DATABASE"),
+        host=res.os.environ.get("HOST"),
+        user=res.os.environ.get("USER"),
+        password=res.os.environ.get("PASSWORD"),
+        database=res.os.environ.get("DATABASE"),
         charset='utf8mb4'
     )
     cursor = conn.cursor(res.pymysql.cursors.DictCursor)
