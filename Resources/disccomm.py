@@ -265,7 +265,7 @@ async def createCharacter(userID, ctx):
         return await sendMessage(userID, ctx, "That name is already taken.", True)
 
     #Ask user to choose their race and wair for the resonse.
-    raceChosen = await addComponentsAndWaitFor(userID, ctx, "You chose the name %PLAYER " + characterName + "). \n \nNext, choose your race: \n1: Orc \n2: Human", 30, whom=userID, comps = [
+    raceChosen = await addComponentsAndWaitFor(userID, ctx, "You chose the name %PLAYER " + characterName + "). \n \nNext, choose your race", 30, whom=userID, comps = [
         [
             res.Button(label = "Orc", style = 4, id = "orc"),
             res.Button(label = "Human", style = 1, id = "human")
@@ -281,7 +281,7 @@ async def createCharacter(userID, ctx):
         displayRace = "n orc"
     else:
         displayRace = " human"
-    classChosen = await addComponentsAndWaitFor(userID, ctx, "You chose a" + displayRace + ". \n \nLastly, choose your class: \n1: Warrior \n2: Mage \n3: Rogue", 30, whom=userID, comps = [
+    classChosen = await addComponentsAndWaitFor(userID, ctx, "You chose a" + displayRace + ". \n \nLastly, choose your class", 30, whom=userID, comps = [
         [
             res.Button(label = "Warrior", style = 4, id = "warrior"),
             res.Button(label = "Mage", style = 1, id = "mage"),
@@ -368,7 +368,7 @@ async def showCharacter(userID, ctx):
     #Retrieve pictures of gold, bars, and frames.
     healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
     expbar = res.Image.open("./Art/expbar.png").convert("RGBA")
-    healthbarFrame = res.Image.open("./Art/healthBarFrame.png").convert("RGBA")
+    healthbarFrame = res.Image.open("./Art/healthbarframe.png").convert("RGBA")
 
     #Calculate the health and exp to display, and crop healthbar and exp bar accordingly.
     remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
@@ -576,7 +576,7 @@ async def combatMessage(userID, ctx, Mob, combattext, components):
     #Paste text
     Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
     healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
-    healthbarFrame = res.Image.open("./Art/whitehealthBarFrame.png").convert("RGBA")
+    healthbarFrame = res.Image.open("./Art/whitehealthbarframe.png").convert("RGBA")
     BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
     w, h = draw.textsize(User.Name, font = Morpheus)
     heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "%PLAYER " + User.Name + ")", canvas, ctx, True)
