@@ -34,12 +34,12 @@ def subStringAfter(keyword, ctx):
 
 def pasteModel(modelID, subfolder, canvas, offset, delete):
     if modelID == "0" or modelID.upper == "F":
-        temp = res.Image.open("Art/0.png").convert("RGBA")
+        temp = res.Image.open("./Art/0.png").convert("RGBA")
     else:
-        temp = res.Image.open("Art/" + subfolder + modelID + ".png").convert("RGBA")
+        temp = res.Image.open("./Art/" + subfolder + modelID + ".png").convert("RGBA")
     canvas.paste(temp, offset, mask = temp)
     if delete and modelID != "0" and modelID.upper != "F":
-        res.os.remove("Art/" + subfolder + modelID + ".png")
+        res.os.remove("./Art/" + subfolder + modelID + ".png")
 async def createMessageCanvas(userID, ctx, printUser):
     #Creat the canvas
     canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
@@ -64,7 +64,7 @@ async def pasteUser(userID, ctx, canvas, d):
 
     #Gets user's discord name and pastes it to canvas
     author = discordUser.name
-    Morpheus = res.ImageFont.truetype("Art/fonts/Cthulhumbus.ttf", 24)
+    Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 24)
     d.text((45, 10), author, fill=(255,255,255), font = Morpheus)
     heightCheck = 45
     return heightCheck
@@ -196,7 +196,7 @@ def fetchColoredModel(modelID, race, subfolder):
     item = itm.Item.returnItem(None, realitem)
 
     #Find the untextured image correlating to item and get it's properties.
-    im = res.Image.open('Art/' + subfolder + race + item.ModelID + '.png')
+    im = res.Image.open('./Art/' + subfolder + race + item.ModelID + '.png')
     im = im.convert('RGBA')
     data = res.np.array(im)
     red, green, blue, alpha = data.T
@@ -215,7 +215,7 @@ def fetchColoredModel(modelID, race, subfolder):
 
     #Save the image and return the name of the image
     im2 = res.Image.fromarray(data)
-    im2.save("Art/" + subfolder + item.Name + ".png", "PNG")
+    im2.save("./Art/" + subfolder + item.Name + ".png", "PNG")
     return item.Name
 
 async def sendMessage(userID, ctx, textToSend, pasteUser, components = None):
@@ -223,7 +223,7 @@ async def sendMessage(userID, ctx, textToSend, pasteUser, components = None):
     canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, pasteUser)
 
     #Paste text
-    Morpheus = res.ImageFont.truetype("Art/fonts/Cthulhumbus.ttf", 17)
+    Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
     heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], textToSend, canvas, ctx, True)
 
     #Crop the image nicely and send it to Discord, then delete picture
@@ -338,9 +338,9 @@ async def showCharacter(userID, ctx):
     heroOffSet = (37,16)
     canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
     d = res.ImageDraw.Draw(canvas)
-    Morpheusbig = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 24)
-    Morpheussmall = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 19)
-    BitPotion = res.ImageFont.truetype("Art/fonts/BitPotion.ttf", 28)
+    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 24)
+    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 19)
+    BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
 
     #Paste backround and race
     pasteModel("white", "", canvas, (0,0), False)
@@ -366,9 +366,9 @@ async def showCharacter(userID, ctx):
     pasteModel(fetchColoredModel(User.Offhand.split("-")[2], User.Race, "Offhand/"), "Offhand/", canvas, heroOffSet, True)
 
     #Retrieve pictures of gold, bars, and frames.
-    healthbar = res.Image.open("Art/healthbar.png").convert("RGBA")
-    expbar = res.Image.open("Art/expbar.png").convert("RGBA")
-    healthbarFrame = res.Image.open("Art/healthBarFrame.png").convert("RGBA")
+    healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
+    expbar = res.Image.open("./Art/expbar.png").convert("RGBA")
+    healthbarFrame = res.Image.open("./Art/healthBarFrame.png").convert("RGBA")
 
     #Calculate the health and exp to display, and crop healthbar and exp bar accordingly.
     remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
@@ -574,10 +574,10 @@ async def combatMessage(userID, ctx, Mob, combattext, components):
     canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, False)
     User = fetchUser(userID, False)
     #Paste text
-    Morpheus = res.ImageFont.truetype("Art/fonts/Cthulhumbus.ttf", 17)
-    healthbar = res.Image.open("Art/healthbar.png").convert("RGBA")
-    healthbarFrame = res.Image.open("Art/whitehealthBarFrame.png").convert("RGBA")
-    BitPotion = res.ImageFont.truetype("Art/fonts/BitPotion.ttf", 28)
+    Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
+    healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
+    healthbarFrame = res.Image.open("./Art/whitehealthBarFrame.png").convert("RGBA")
+    BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
     w, h = draw.textsize(User.Name, font = Morpheus)
     heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "%PLAYER " + User.Name + ")", canvas, ctx, True)
     remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
@@ -884,8 +884,8 @@ async def showItemData(userID, ctx, itemString):
     #Check if the item exists.
     itemSegments = itemString.split("-")
     item = itm.Item.returnItem(None, itemSegments[1])
-    Morpheusbig = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 24)
-    Morpheussmall = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 19)
+    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 24)
+    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 19)
     canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
     d = res.ImageDraw.Draw(canvas)
     heightCheck = 0
@@ -1115,8 +1115,8 @@ async def showFullInventory(userID, ctx):
         if "" != i:
             itemSegments = i.split("-")
             item = itm.Item.returnItem(None, itemSegments[1])
-            Morpheusbig = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 24)
-            Morpheussmall = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 19)
+            Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 24)
+            Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 19)
             canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
             d = res.ImageDraw.Draw(canvas)
             heightCheck = 0
