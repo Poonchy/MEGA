@@ -11,7 +11,7 @@ async def hero(ctx):
 @pyd.res.bot.command()
 async def help(ctx):
     authortoken = str(ctx.author.id)
-    await ctx.message.author.send("https://megapy.netlify.com/commands")
+    await ctx.message.author.send("https://megapy.netlify.com")
     await pyd.sendMessage(authortoken, ctx, "Head over to my website to see a full list of my commands!", False)
 
 @pyd.res.bot.command()
