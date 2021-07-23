@@ -63,9 +63,7 @@ class Item:
         charges = self.Charges if self.Charges else "F"
         spells = ""
         if self.Spells:
-            print (self.Spells)
             for i in self.Spells:
-                print (i)
                 spells += i.ID + "&"
         else:
             spells = "F"
@@ -714,8 +712,9 @@ Items = {
         "reagents": "4-copper,",
 
         "modelID": "1",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "144 90 40, 201 128 60,  50 50 50, 105 105 105",
         "showHair": "no",
+        "level":"5",
 
         "slot": "Helmet",
         "type": "Mail",
@@ -732,6 +731,7 @@ Items = {
 
         "modelID": "2",
         "colors": "201 128 60, 144 90 40",
+        "level":"5",
 
         "slot": "Shoulders",
         "type": "Mail",
@@ -748,7 +748,8 @@ Items = {
         "reagents": "4-copper,",
 
         "modelID": "3",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "144 90 40, 201 128 60,  50 50 50, 105 105 105",
+        "level":"5",
 
         "slot": "Chest",
         "type": "Mail",
@@ -764,7 +765,8 @@ Items = {
         "reagents": "4-copper,",
 
         "modelID": "4",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "144 90 40, 201 128 60,  50 50 50, 105 105 105",
+        "level":"5",
 
         "slot": "Gloves",
         "type": "Mail",
@@ -781,6 +783,7 @@ Items = {
 
         "modelID": "5",
         "colors": "181 108 40, 104 35 1",
+        "level":"5",
 
         "slot": "Waist",
         "type": "Mail",
@@ -797,6 +800,7 @@ Items = {
 
         "modelID": "6",
         "colors": "201 128 60, 144 90 40",
+        "level":"5",
 
         "slot": "Legs",
         "type": "Mail",
@@ -813,6 +817,7 @@ Items = {
 
         "modelID": "7",
         "colors": "201 128 60, 144 90 40",
+        "level":"5",
 
         "slot": "Feet",
         "type": "Mail",
@@ -828,7 +833,8 @@ Items = {
         "reagents": "4-copper,",
 
         "modelID": "52",
-        "colors": "201 128 60, 164 95 61",
+        "colors": " 164 95 61, 201 128 60",
+        "level":"5",
 
         "slot": "Mainhand",
         "type": "Sword",
@@ -843,8 +849,9 @@ Items = {
         "rarity": "Uncommon",
         "reagents": "4-copper,",
 
-        "modelID": "52",
-        "colors": "201 128 60, 164 95 61",
+        "modelID": "9",
+        "colors": " 164 95 61, 201 128 60",
+        "level":"5",
 
         "slot": "Offhand",
         "type": "Shield",
@@ -863,6 +870,7 @@ Items = {
         "modelID": "10",
         "colors": "220 210 200, 250 240 230",
         "showHair": "no",
+        "level":"5",
 
         "slot": "Helmet",
         "type": "Cloth",
@@ -881,6 +889,7 @@ Items = {
 
         "modelID": "11",
         "colors": "220 210 200, 250 240 230",
+        "level":"5",
 
         "slot": "Shoulders",
         "type": "Cloth",
@@ -900,6 +909,7 @@ Items = {
 
         "modelID": "12",
         "colors": "220 210 200, 250 240 230",
+        "level":"5",
 
         "slot": "Chest",
         "type": "Cloth",
@@ -918,6 +928,7 @@ Items = {
 
         "modelID": "13",
         "colors": "225 216 207, 195 186 187",
+        "level":"5",
 
         "slot": "Gloves",
         "type": "Cloth",
@@ -936,6 +947,7 @@ Items = {
 
         "modelID": "14",
         "colors": "195 186 187, 225 216 207, 100 100 100",
+        "level":"5",
 
         "slot": "Waist",
         "type": "Cloth",
@@ -954,6 +966,7 @@ Items = {
 
         "modelID": "15",
         "colors": "220 210 200, 250 240 230",
+        "level":"5",
 
         "slot": "Legs",
         "type": "Cloth",
@@ -972,6 +985,7 @@ Items = {
 
         "modelID": "16",
         "colors": "195 186 187, 225 216 207",
+        "level":"5",
 
         "slot": "Feet",
         "type": "Cloth",
@@ -984,12 +998,13 @@ Items = {
     }),
     Item({
         "name": "Linen Rod",
-        "ID": "60",
+        "ID": "97",
         "rarity": "Uncommon",
         "reagents": "4-linen,",
 
         "modelID": "17",
         "colors": "121 85 72, 225 216 207",
+        "level":"5",
 
         "slot": "Mainhand",
         "type": "Staff",
@@ -1010,6 +1025,7 @@ Items = {
         "modelID": "18",
         "colors": "107 71 62, 121 85 72",
         "showHair": "no",
+        "level":"5",
 
         "slot": "Helmet",
         "type": "Leather",
@@ -1027,6 +1043,7 @@ Items = {
 
         "modelID": "19",
         "colors": "107 71 62, 121 85 72",
+        "level":"5",
 
         "slot": "Shoulders",
         "type": "Leather",
@@ -1044,6 +1061,7 @@ Items = {
 
         "modelID": "20",
         "colors": "107 71 62, 121 85 72",
+        "level":"5",
 
         "slot": "Chest",
         "type": "leather",
@@ -1061,6 +1079,7 @@ Items = {
 
         "modelID": "21",
         "colors": "107 71 62, 121 85 72",
+        "level":"5",
 
         "slot": "Gloves",
         "type": "leather",
@@ -1071,12 +1090,13 @@ Items = {
     }),
     Item({
         "name": "Embossed Buckle",
-        "ID": "49",
+        "ID": "65",
         "rarity": "Uncommon",
         "reagents": "4-light,",
 
-        "modelID": "65",
+        "modelID": "22",
         "colors": "61 41 35, 82 56 49, 61 61 61",
+        "level":"5",
 
         "slot": "Waist",
         "type": "leather",
@@ -1093,6 +1113,7 @@ Items = {
 
         "modelID": "23",
         "colors": "107 71 62, 121 85 72",
+        "level":"5",
 
         "slot": "Legs",
         "type": "leather",
@@ -1110,6 +1131,7 @@ Items = {
 
         "modelID": "24",
         "colors": "107 71 62, 121 85 72",
+        "level":"5",
 
         "slot": "Feet",
         "type": "leather",
@@ -1126,6 +1148,7 @@ Items = {
 
         "modelID": "25",
         "colors": "133 133 133, 107 107 107, 179 18 7",
+        "level":"5",
 
         "slot": "Mainhand",
         "type": "Dagger",
@@ -1141,8 +1164,9 @@ Items = {
         "rarity": "Uncommon",
         "reagents": "4-light,",
 
-        "modelID": "52",
-        "colors": "201 128 60, 164 95 61",
+        "modelID": "26",
+        "colors": " 164 95 61, 201 128 60",
+        "level":"5",
 
         "slot": "Offhand",
         "type": "Dagger",
@@ -1160,7 +1184,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "70",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "showHair": "no",
         "level":"10",
 
@@ -1177,7 +1201,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "71",
-        "colors": "201 128 60, 144 90 40",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Shoulders",
@@ -1194,7 +1218,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "72",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Chest",
@@ -1210,7 +1234,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "73",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Gloves",
@@ -1226,7 +1250,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "74",
-        "colors": "181 108 40, 104 35 1",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Waist",
@@ -1242,7 +1266,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "75",
-        "colors": "201 128 60, 144 90 40",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Legs",
@@ -1258,7 +1282,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "76",
-        "colors": "201 128 60, 144 90 40",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Feet",
@@ -1269,16 +1293,16 @@ Items = {
         "class": "warrior"
     }),
     Item({
-        "name": "Sentry Sword",
+        "name": "Sentry Warhammer",
         "ID": "77",
         "rarity": "Rare",
 
         "modelID": "77",
-        "colors": "201 128 60, 164 95 61",
+        "colors": "188 170 164, 215 204 200, 121 85 72, 109 76 65",
         "level":"10",
 
         "slot": "Mainhand",
-        "type": "Sword",
+        "type": "Mace",
         "value": "3",
         "stat": "3",
         "damage": "4 - 7",
@@ -1290,7 +1314,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "78",
-        "colors": "201 128 60, 164 95 61",
+        "colors": "194 72 35, 255 87 34, 117 117 117, 158 158 158, 93 64 55",
         "level":"10",
 
         "slot": "Offhand",
@@ -1302,13 +1326,13 @@ Items = {
     }),
 
     Item({
-        "name": "Apothecary Hat",
+        "name": "Apothecary Headband",
         "ID": "79",
         "rarity": "Rare",
 
         "modelID": "79",
-        "colors": "220 210 200, 250 240 230",
-        "showHair": "no",
+        "colors": "189 189 189, 33 33 33",
+        "showHair": "yes",
         "level":"10",
 
         "slot": "Helmet",
@@ -1325,7 +1349,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "80",
-        "colors": "220 210 200, 250 240 230",
+        "colors": "189 189 189, 33 33 33",
         "level":"10",
 
         "slot": "Shoulders",
@@ -1339,12 +1363,12 @@ Items = {
         "class": "mage"
     }),
     Item({
-        "name": "Apothecary Robe",
+        "name": "Apothecary Vestment",
         "ID": "81",
         "rarity": "Rare",
 
         "modelID": "81",
-        "colors": "220 210 200, 250 240 230",
+        "colors": "189 189 189, 33 33 33",
         "level":"10",
 
         "slot": "Chest",
@@ -1357,12 +1381,12 @@ Items = {
         "class": "mage"
     }),
     Item({
-        "name": "Apothecary Gloves",
+        "name": "Apothecary Mittens",
         "ID": "82",
         "rarity": "Rare",
 
         "modelID": "82",
-        "colors": "225 216 207, 195 186 187",
+        "colors": "189 189 189, 33 33 33",
         "level":"10",
 
         "slot": "Gloves",
@@ -1380,7 +1404,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "83",
-        "colors": "195 186 187, 225 216 207, 100 100 100",
+        "colors": "189 189 189, 33 33 33",
         "level":"10",
 
         "slot": "Waist",
@@ -1393,12 +1417,12 @@ Items = {
         "class": "mage"
     }),
     Item({
-        "name": "Apothecary Pants",
+        "name": "Apothecary Kilt",
         "ID": "84",
         "rarity": "Rare",
 
         "modelID": "84",
-        "colors": "220 210 200, 250 240 230",
+        "colors": "189 189 189, 33 33 33",
         "level":"10",
 
         "slot": "Legs",
@@ -1416,7 +1440,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "85",
-        "colors": "195 186 187, 225 216 207",
+        "colors": "33 33 33, 189 189 189",
         "level":"10",
 
         "slot": "Feet",
@@ -1429,12 +1453,12 @@ Items = {
         "class": "mage"
     }),
     Item({
-        "name": "Apothecary Staff",
+        "name": "Apothecary Rod",
         "ID": "86",
         "rarity": "Rare",
 
         "modelID": "86",
-        "colors": "121 85 72, 225 216 207",
+        "colors": "191 54 12, 153 43 9, 77 53 45, 109 76 65",
         "level":"10",
 
         "slot": "Mainhand",
@@ -1448,13 +1472,13 @@ Items = {
     }),
 
     Item({
-        "name": "Bandit's Cap",
+        "name": "Bandit Mask",
         "ID": "87",
         "rarity": "Rare",
 
         "modelID": "87",
-        "colors": "107 71 62, 121 85 72",
-        "showHair": "no",
+        "colors": "33 33 33, 66 66 66",
+        "showHair": "yes",
         "level":"10",
 
         "slot": "Helmet",
@@ -1471,7 +1495,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "88",
-        "colors": "107 71 62, 121 85 72",
+        "colors": "66 66 66, 97 97 97",
         "level":"10",
 
         "slot": "Shoulders",
@@ -1483,12 +1507,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Jacket",
+        "name": "Bandit Jacket",
         "ID": "89",
         "rarity": "Rare",
 
         "modelID": "89",
-        "colors": "107 71 62, 121 85 72",
+        "colors": "66 66 66, 97 97 97",
         "level":"10",
 
         "slot": "Chest",
@@ -1500,12 +1524,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Gloves",
+        "name": "Bandit Gloves",
         "ID": "90",
         "rarity": "Rare",
 
         "modelID": "90",
-        "colors": "107 71 62, 121 85 72",
+        "colors": "66 66 66, 97 97 97, 78 52 46",
         "level":"10",
 
         "slot": "Gloves",
@@ -1516,12 +1540,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Buckle",
+        "name": "Bandit Buckle",
         "ID": "91",
         "rarity": "Rare",
 
         "modelID": "91",
-        "colors": "61 41 35, 82 56 49, 61 61 61",
+        "colors": "66 66 66, 97 97 97",
         "level":"10",
 
         "slot": "Waist",
@@ -1532,12 +1556,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Pants",
+        "name": "Bandit Pants",
         "ID": "92",
         "rarity": "Rare",
 
         "modelID": "92",
-        "colors": "107 71 62, 121 85 72",
+        "colors": "66 66 66, 97 97 97",
         "level":"10",
 
         "slot": "Legs",
@@ -1549,12 +1573,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Boots",
+        "name": "Bandit Boots",
         "ID": "93",
         "rarity": "Rare",
 
         "modelID": "93",
-        "colors": "107 71 62, 121 85 72",
+        "colors": "66 66 66, 97 97 97",
         "level":"10",
 
         "slot": "Feet",
@@ -1566,12 +1590,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Dagger",
+        "name": "Bandit Dagger",
         "ID": "94",
         "rarity": "Rare",
 
         "modelID": "94",
-        "colors": "133 133 133, 107 107 107, 179 18 7",
+        "colors": "97 97 97, 158 158 158, 81 45 168",
         "level":"10",
 
         "slot": "Mainhand",
@@ -1582,12 +1606,12 @@ Items = {
         "class": "rogue"
     }),
     Item({
-        "name": "Bandit's Shiv",
+        "name": "Bandit Shiv",
         "ID": "95",
         "rarity": "Rare",
 
         "modelID": "95",
-        "colors": "201 128 60, 164 95 61",
+        "colors": "97 97 97, 158 158 158, 81 45 168",
         "level":"10",
 
         "slot": "Offhand",
@@ -1604,7 +1628,7 @@ Items = {
         "rarity": "Rare",
 
         "modelID": "95",
-        "colors": "201 128 60, 164 95 61",
+        "colors": " 164 95 61, 201 128 60",
         "level":"10",
 
         "slot": "Trinket",
@@ -1626,7 +1650,7 @@ Items = {
         "reagents": "5-copper,4-bronze,3-iron,2-mithril,1-thorium",
 
         "modelID": "1",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "144 90 40, 201 128 60,  50 50 50, 105 105 105",
         "showHair": "no",
 
         "slot": "Helmet",
@@ -1644,7 +1668,7 @@ Items = {
         "reagents": "5-linen,4-wool,3-silk,2-mageweave,1-runecloth",
 
         "modelID": "1",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "144 90 40, 201 128 60,  50 50 50, 105 105 105",
         "showHair": "no",
 
         "slot": "Helmet",
@@ -1662,7 +1686,7 @@ Items = {
         "reagents": "5-light,4-medium,3-heavy,2-thick,1-rugged",
 
         "modelID": "1",
-        "colors": "201 128 60, 144 90 40, 105 105 105, 50 50 50",
+        "colors": "144 90 40, 201 128 60,  50 50 50, 105 105 105",
         "showHair": "no",
 
         "slot": "Helmet",
@@ -1679,9 +1703,9 @@ Items = {
         "rarity": "Common",
         "spells":[spl.Spell.findByID("6")],
         "spellattrs": [{"health":30}],
+        "charges":"1",
         "class": "all"
     }),
-
 
     Item({
         "name": "Key To The Deadmines",

@@ -52,8 +52,8 @@ rhakazor = Boss({
     "name":"Rhak'azor",
     "level":"19",
     "type":"boss",
-    "health":"200",
-    "damage":"4-5",
+    "health":"450",
+    "damage":"50-70",
     "loot":{
         "mage":{83:40},
         "rogue":{91:40},
@@ -67,12 +67,12 @@ rhakazor = Boss({
 johnson = Boss({
     "ID": "2",
     "name":"Miner Johnson",
-    "level":"19",
+    "level":"21",
     "type":"rare",
     "chance":"50",
     "suprise":" \n \nSuddenly, a hole opens up in front of you! A rugged, tall miner climbs from the hole and turns to you. \n \nYou now face Miner Johnson. Will you engage him? Or flee and live another day?",
-    "health":"200",
-    "damage":"4-5",
+    "health":"550",
+    "damage":"52-71",
     "loot":{
         "mage":{1000:100},
         "rogue":{95:40},
@@ -88,8 +88,8 @@ sneed = Boss({
     "name":"Sneed",
     "level":"20",
     "type":"boss",
-    "health":"200",
-    "damage":"4-5",
+    "health":"470",
+    "damage":"52-70",
     "loot":{
         "mage":{82:40},
         "rogue":{90:40},
@@ -105,8 +105,8 @@ gilnid = Boss({
     "name":"Gilnid",
     "level":"20",
     "type":"boss",
-    "health":"200",
-    "damage":"4-5",
+    "health":"500",
+    "damage":"53-71",
     "loot":{
         "mage":{85:40},
         "rogue":{93:40},
@@ -138,10 +138,10 @@ gilnid = Boss({
 smite = Boss({
     "ID": "5",
     "name":"Mr. Smite",
-    "level":"20",
+    "level":"21",
     "type":"boss",
-    "health":"200",
-    "damage":"4-5",
+    "health":"520",
+    "damage":"54-71",
     "loot":{
         "mage":{86:40},
         "rogue":{94:40},
@@ -154,11 +154,11 @@ smite = Boss({
 })
 cookie = Boss({
     "ID": "6",
-    "name":"Mr. Smite",
-    "level":"20",
+    "name":"Cookie",
+    "level":"21",
     "type":"optional",
-    "health":"200",
-    "damage":"4-5",
+    "health":"500",
+    "damage":"53-71",
     "loot":{
         "mage":{84:40},
         "rogue":{92:40},
@@ -172,10 +172,10 @@ cookie = Boss({
 vancleef = Boss({
     "ID": "7",
     "name":"Edwin Vancleef",
-    "level":"20",
+    "level":"22",
     "type":"boss",
-    "health":"200",
-    "damage":"4-5",
+    "health":"600",
+    "damage":"58-80",
     "loot":{
         "mage":{79:40},
         "rogue":{87:40},
@@ -208,10 +208,10 @@ vancleef = Boss({
 greenskin = Boss({
     "ID": "8",
     "name":"Captain Greenskin",
-    "level":"20",
+    "level":"21",
     "type":"boss",
-    "health":"200",
-    "damage":"4-5",
+    "health":"550",
+    "damage":"54-72",
     "loot":{
         "mage":{80:40},
         "rogue":{88:40},

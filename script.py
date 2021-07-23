@@ -2,104 +2,105 @@
 import Resources.disccomm as pyd
 import traceback
 
-@pyd.res.client.event
-async def on_message(message):
-    authortoken = str(message.author.id)
-    if message.author == pyd.res.client.user:
-        return
-    elif message.content.lower().startswith('mega help'):
-        await message.author.send("https://mega-frontend.herokuapp.com")
-        await pyd.sendMessage(authortoken, message, "Head over to my website to see a full list of my commands!", False)
-    elif message.content.lower().startswith('mega create'):
-        try:
-            await pyd.createCharacter(authortoken, message)
-        except Exception as e:
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega delete'):
-        try:
-            await pyd.deleteCharacter(authortoken, message)
-        except Exception as e:
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega hero'):
-        await pyd.showCharacter(authortoken, message)
-    elif message.content.lower().startswith('mega equip'):
-        try:
-            await pyd.equip(authortoken, message)
-        except Exception as e:
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega unequip'):
-        try:
-            await pyd.unequip(authortoken, message)
-        except Exception as e:
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega sell'):
-        try:
-            await pyd.sell(authortoken, message)
-        except Exception as e:
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega use'):
-        try:
-            await pyd.use(authortoken, message)
-        except Exception as e:
-            traceback.print_exc()
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega inspect'):
-        try:
-            await pyd.inspect(authortoken, message)
-        except Exception as e:
-            traceback.print_exc()
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega shop'):
-        try:
-            await pyd.shop(authortoken, message)
-        except Exception as e:
-            traceback.print_exc()
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega train'):
-        try:
-            await pyd.train(authortoken, message)
-        except Exception as e:
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('mega item'):
-        await pyd.queryItem(authortoken, message)
-    elif message.content.lower().startswith('mega gather'):
-        await pyd.getResources(authortoken, message)
-    elif message.content.lower().startswith('mega resources'):
-        await pyd.showResources(authortoken, message)
-    elif message.content.lower().startswith('mega craft'):
-        await pyd.craftItem(authortoken, message)
-    elif message.content.lower().startswith('mega inventory'):
-        await pyd.showInventory(authortoken, message)
-    elif message.content.lower().startswith('mega full inventory'):
-        await pyd.showFullInventory(authortoken, message)
-    
-    #God have mercy on my soul
-    elif message.content.lower().startswith('mega run'):
-        try:
-            await pyd.runDungeon(authortoken, message)
-        except Exception as e:
-            traceback.print_exc()
-            print(e)
-            pyd.res.activeUsers.remove(authortoken)
-    
-    
-    elif message.content.lower().startswith('reset'):
-        pyd.res.activeUsers.remove(authortoken)
-    elif message.content.lower().startswith('stop'):
-        await pyd.res.client.logout()
 
-@pyd.res.client.event
+@pyd.res.bot.command()
+async def hero(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.showCharacter(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def help(ctx):
+    authortoken = str(ctx.author.id)
+    await ctx.message.author.send("https://megapy.netlify.com/commands")
+    await pyd.sendMessage(authortoken, ctx, "Head over to my website to see a full list of my commands!", False)
+
+@pyd.res.bot.command()
+async def create(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.createCharacter(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def delete(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.deleteCharacter(authortoken, ctx)
+
+
+@pyd.res.bot.command()
+async def equip(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.equip(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def unequip(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.unequip(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def use(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.use(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def sell(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.sell(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def inspect(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.inspect(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def shop(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.shop(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def train(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.train(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def item(ctx):
+    print (ctx)
+    authortoken = str(ctx.author.id)
+    await pyd.queryItem(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def gather(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.getResources(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def craft(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.craftItem(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def resources(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.showResources(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def inventory(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.showInventory(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def full(ctx, inventory = None):
+    if inventory != "inventory":
+        return
+    authortoken = str(ctx.author.id)
+    await pyd.showFullInventory(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def run(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.runDungeon(authortoken, ctx)
+
+@pyd.res.bot.event
 async def on_ready():
-    print('Succesfull bootup')
-    game = pyd.res.discord.Activity(type = pyd.res.discord.ActivityType.listening, name = "Mega Help")
-    await pyd.res.client.change_presence(status=pyd.res.discord.Status.online, activity=game)
-pyd.res.client.run(pyd.con.TOKEN)
+    pyd.res.DiscordComponents(pyd.res.bot)
+    print(f"Logged in as {pyd.res.bot.user}!")
+
+pyd.res.bot.run(pyd.con.TOKEN)
