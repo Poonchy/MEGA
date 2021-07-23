@@ -710,7 +710,7 @@ async def combat(userID, ctx, Mob):
             ]
         ])
         if response[userID] == "attack":
-            dmgDealt, procs = User.calculateDamagedealt(Mob)
+            dmgDealt, procs = User.calculateDamageDealt(Mob)
             mesg = " \nYou dealt " + str(dmgDealt) + " damage."
             mesg += procs
             Mob.health -= dmgDealt
