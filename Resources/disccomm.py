@@ -52,6 +52,9 @@ async def createMessageCanvas(userID, ctx, printUser):
 async def pasteUser(userID, ctx, canvas, d):
     discordUser = await ctx.guild.query_members(user_ids=[userID])
     discordUser = discordUser[0]
+    print (discordUser)
+    print (discordUser.avatar)
+    print (discordUser.avatar_url)
     pfp = str(discordUser.avatar).replace("webp", "png")
     print (pfp)
     r = res.requests.get(pfp, allow_redirects=True)
