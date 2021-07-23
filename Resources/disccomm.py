@@ -338,8 +338,8 @@ async def showCharacter(userID, ctx):
     heroOffSet = (37,16)
     canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
     d = res.ImageDraw.Draw(canvas)
-    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 24)
-    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 19)
+    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 24)
+    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 19)
     BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
 
     #Paste backround and race
@@ -884,8 +884,8 @@ async def showItemData(userID, ctx, itemString):
     #Check if the item exists.
     itemSegments = itemString.split("-")
     item = itm.Item.returnItem(None, itemSegments[1])
-    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 24)
-    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 19)
+    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 24)
+    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 19)
     canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
     d = res.ImageDraw.Draw(canvas)
     heightCheck = 0
@@ -1115,8 +1115,8 @@ async def showFullInventory(userID, ctx):
         if "" != i:
             itemSegments = i.split("-")
             item = itm.Item.returnItem(None, itemSegments[1])
-            Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 24)
-            Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.ttf", 19)
+            Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 24)
+            Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 19)
             canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
             d = res.ImageDraw.Draw(canvas)
             heightCheck = 0
