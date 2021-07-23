@@ -64,7 +64,7 @@ async def pasteUser(userID, ctx, canvas, d):
 
     #Gets user's discord name and pastes it to canvas
     author = discordUser.name
-    Morpheus = res.ImageFont.truetype("Art/Fonts/Cthulhumbus.ttf", 24)
+    Morpheus = res.ImageFont.truetype("Art/fonts/Cthulhumbus.ttf", 24)
     d.text((45, 10), author, fill=(255,255,255), font = Morpheus)
     heightCheck = 45
     return heightCheck
@@ -223,7 +223,7 @@ async def sendMessage(userID, ctx, textToSend, pasteUser, components = None):
     canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, pasteUser)
 
     #Paste text
-    Morpheus = res.ImageFont.truetype("Art/Fonts/Cthulhumbus.ttf", 17)
+    Morpheus = res.ImageFont.truetype("Art/fonts/Cthulhumbus.ttf", 17)
     heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], textToSend, canvas, ctx, True)
 
     #Crop the image nicely and send it to Discord, then delete picture
@@ -338,9 +338,9 @@ async def showCharacter(userID, ctx):
     heroOffSet = (37,16)
     canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
     d = res.ImageDraw.Draw(canvas)
-    Morpheusbig = res.ImageFont.truetype("Art/Fonts/Morpheus.ttf", 24)
-    Morpheussmall = res.ImageFont.truetype("Art/Fonts/Morpheus.ttf", 19)
-    BitPotion = res.ImageFont.truetype("Art/Fonts/BitPotion.ttf", 28)
+    Morpheusbig = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 24)
+    Morpheussmall = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 19)
+    BitPotion = res.ImageFont.truetype("Art/fonts/BitPotion.ttf", 28)
 
     #Paste backround and race
     pasteModel("white", "", canvas, (0,0), False)
@@ -574,10 +574,10 @@ async def combatMessage(userID, ctx, Mob, combattext, components):
     canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, False)
     User = fetchUser(userID, False)
     #Paste text
-    Morpheus = res.ImageFont.truetype("Art/Fonts/Cthulhumbus.ttf", 17)
+    Morpheus = res.ImageFont.truetype("Art/fonts/Cthulhumbus.ttf", 17)
     healthbar = res.Image.open("Art/healthbar.png").convert("RGBA")
     healthbarFrame = res.Image.open("Art/whitehealthBarFrame.png").convert("RGBA")
-    BitPotion = res.ImageFont.truetype("Art/Fonts/BitPotion.ttf", 28)
+    BitPotion = res.ImageFont.truetype("Art/fonts/BitPotion.ttf", 28)
     w, h = draw.textsize(User.Name, font = Morpheus)
     heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "%PLAYER " + User.Name + ")", canvas, ctx, True)
     remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
@@ -884,8 +884,8 @@ async def showItemData(userID, ctx, itemString):
     #Check if the item exists.
     itemSegments = itemString.split("-")
     item = itm.Item.returnItem(None, itemSegments[1])
-    Morpheusbig = res.ImageFont.truetype("Art/Fonts/Morpheus.ttf", 24)
-    Morpheussmall = res.ImageFont.truetype("Art/Fonts/Morpheus.ttf", 19)
+    Morpheusbig = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 24)
+    Morpheussmall = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 19)
     canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
     d = res.ImageDraw.Draw(canvas)
     heightCheck = 0
@@ -1115,8 +1115,8 @@ async def showFullInventory(userID, ctx):
         if "" != i:
             itemSegments = i.split("-")
             item = itm.Item.returnItem(None, itemSegments[1])
-            Morpheusbig = res.ImageFont.truetype("Art/Fonts/Morpheus.ttf", 24)
-            Morpheussmall = res.ImageFont.truetype("Art/Fonts/Morpheus.ttf", 19)
+            Morpheusbig = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 24)
+            Morpheussmall = res.ImageFont.truetype("Art/fonts/Morpheus.ttf", 19)
             canvas = res.Image.new('RGBA', (300,1200), (0, 0, 0, 0))
             d = res.ImageDraw.Draw(canvas)
             heightCheck = 0
