@@ -1,7 +1,8 @@
+import random
 class Spell:
     def __init__(self, Dictionary):
         self.ID = Dictionary.get("ID", None)
-        self.Name = Dictionary.get("attune", None)
+        self.Name = Dictionary.get("name", None)
         self.Description = Dictionary.get("description", None)
         self.Type = Dictionary.get("type", None)
         self.Function = Dictionary.get("function")
@@ -15,7 +16,6 @@ def restoreHealth(**kwargs):
     user = kwargs.get('user', None)
     health = kwargs.get('health', None)
     user.modifyHealth(health,health)
-    print ("success")
     return " \n \nYou restored " + str(health) + " health."
 
 def attune(**kwargs):
@@ -37,7 +37,13 @@ def attune(**kwargs):
     return msg
 
 def immune(**kwargs):
-    return "immune"
+    user = kwargs.get('user', None)
+    mob = kwargs.get('mob', None)
+    if user and user.stunned:
+        user.stunned = False
+        return " \nYou resisted a stun effect"
+    else:
+        return ""
 
 def medallion(**kwargs):
     user = kwargs.get('user', None)
@@ -48,22 +54,44 @@ def medallion(**kwargs):
     while i < len(spellSplit):
         #cut
         if spellSplit[i] == "4":
-            if int(user.Health) < 30:
-                return " \n \nThe medallion cannot be used right now."
+            if int(user.Health) < 100:
+                return " \nThe medallion cannot be used right now."
             else:
-                user.modifyHealth(-30, -30)
-                spellSplit[i] = "5"
+                user.modifyHealth(-100, -100)
+                spellSplit[i] = "7"
                 itemSplit[4] = "&".join(spellSplit)
                 user.updateSelf("trinket", "-".join(itemSplit))
-                return " \n \nThe medallion cuts deep, draining 30 of your health."
-        #restore
-        elif spellSplit[i] == "5":
-            spellSplit[i] = "4"
-            itemSplit[4] = "&".join(spellSplit)
-            user.updateSelf("trinket", "-".join(itemSplit))
-            user.modifyHealth(30, 30)
-            return " \n \nYou reabsorb the life force in the medallion, restoring 30 health."
+                return " \nThe medallion cuts deep, draining 100 of your health."
         i += 1
+    return ""
+
+def medallionPassive(**kwargs):
+    user = kwargs.get('user', None)
+    mob = kwargs.get('mob', None)
+    item = user.Trinket
+    itemSplit = item.split("-")
+    spellSplit = itemSplit[4].split("&")
+    i = 0
+    while i < len(spellSplit):
+        if spellSplit[i] == "7":
+            if int(user.Health) - user.damageTaken < 0:
+                user.modifyHealth(100, 100)
+                spellSplit[i] = "4"
+                itemSplit[4] = "&".join(spellSplit)
+                user.updateSelf("trinket", "-".join(itemSplit))
+                return " \nThe medallion breaks open, reinvigorating you for 100 health and preventing death."
+        i+=1
+    return ""
+
+
+def fireball1(**kwargs):
+    user = kwargs.get('user', None)
+    mob = kwargs.get('mob', None)
+    if mob and user:
+        roll = random.randint(0, 100)
+        if roll < 50:
+            mob.mobhealth -= 10
+
 
 Spells = [
     Spell({
@@ -82,21 +110,28 @@ Spells = [
     }),
     Spell({
         "ID":"3",
-        "name":"stunimmune",
+        "name":"Stun Immunity",
         "description": "Makes you resilient against stuns.",
-        "type":"passive",
+        "type":"onhit",
         "function": immune
     }),
     Spell({
         "ID":"4",
-        "name":"vctrinketdrain",
-        "description": "Cut the medallion deep into your arm, draining 30 health and storing it within the medallion.",
+        "name":"Engorge",
+        "description": "Cut the medallion deep into your arm, draining 100 health and storing it within the medallion.",
         "type":"active",
         "function": medallion
     }),
     Spell({
-        "ID":"5",
+        "ID":"7",
         "name":"vctrinketrestore",
+        "description": "Taking fatal damage will instead break open the medallion, causing you to heal for 100 health instead.",
+        "type":"onhit",
+        "function": medallionPassive
+    }),
+    Spell({
+        "ID":"5",
+        "name":"Reabsorb",
         "description": "Drain the medallion, restoring the health stored.",
         "type":"active",
         "function": medallion
@@ -107,5 +142,12 @@ Spells = [
         "description": "Restore 30 health.",
         "type":"active",
         "function": restoreHealth
+    }),
+    Spell({
+        "ID":"8",
+        "name":"fire weapon",
+        "description": "Shoot a fireball at the target, dealing 10 damage.",
+        "type":"proc",
+        "function": fireball1
     }),
 ]

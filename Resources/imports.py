@@ -20,7 +20,15 @@ import requests
 import string
 from collections import defaultdict
 from decouple import config
-from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType, component
-
-client = discord.Client()
+from discord_components import DiscordComponents, Button, Select, SelectOption, ActionRow
+from discord.ext.commands import Bot
+def mixedCase(*args):
+  total = []
+  import itertools
+  for string in args:
+    a = map(''.join, itertools.product(*((c.upper(), c.lower()) for c in       string)))
+    for x in list(a): total.append(x)
+  return list(total)
 activeUsers = []
+activity = discord.Activity(type=discord.ActivityType.listening, name="mega help")
+bot = Bot(case_insensitive=True, activity=activity, help_command=None, command_prefix = mixedCase("mega "))
