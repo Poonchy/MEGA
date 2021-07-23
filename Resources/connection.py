@@ -1,8 +1,10 @@
 import Resources.imports as res
-from dotenv import load_dotenv
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except:
+    pass
 TOKEN = res.os.environ.get("TOKEN")
-print (TOKEN)
 def openConn():
     conn = res.pymysql.connect(
         host=res.os.environ.get("HOST"),
