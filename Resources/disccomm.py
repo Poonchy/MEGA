@@ -1,5 +1,3 @@
-from typing import KeysView
-from discord.enums import ButtonStyle
 import Resources.imports as res
 import Resources.character as char
 import Resources.connection as con
