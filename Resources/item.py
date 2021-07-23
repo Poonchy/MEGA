@@ -1703,6 +1703,7 @@ Items = {
         "rarity": "Common",
         "spells":[spl.Spell.findByID("6")],
         "spellattrs": [{"health":30}],
+        "charges":"1",
         "class": "all"
     }),
 

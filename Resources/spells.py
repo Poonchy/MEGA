@@ -37,7 +37,13 @@ def attune(**kwargs):
     return msg
 
 def immune(**kwargs):
-    return "immune"
+    user = kwargs.get('user', None)
+    mob = kwargs.get('mob', None)
+    if user and user.stunned:
+        user.stunned = False
+        return " \nYou resisted a stun effect"
+    else:
+        return ""
 
 def medallion(**kwargs):
     user = kwargs.get('user', None)
@@ -49,27 +55,34 @@ def medallion(**kwargs):
         #cut
         if spellSplit[i] == "4":
             if int(user.Health) < 100:
-                return " \n \nThe medallion cannot be used right now."
+                return " \nThe medallion cannot be used right now."
             else:
                 user.modifyHealth(-100, -100)
-                spellSplit[i] = "5"
+                spellSplit[i] = "7"
                 itemSplit[4] = "&".join(spellSplit)
                 user.updateSelf("trinket", "-".join(itemSplit))
-                return " \n \nThe medallion cuts deep, draining 100 of your health."
-        #restore
-        elif spellSplit[i] == "5":
-            spellSplit[i] = "4"
-            itemSplit[4] = "&".join(spellSplit)
-            user.updateSelf("trinket", "-".join(itemSplit))
-            user.modifyHealth(100, 100)
-            return " \n \nYou reabsorb the life force in the medallion, restoring 100 health."
+                return " \nThe medallion cuts deep, draining 100 of your health."
         i += 1
+    return ""
 
 def medallionPassive(**kwargs):
     user = kwargs.get('user', None)
     mob = kwargs.get('mob', None)
     item = user.Trinket
     itemSplit = item.split("-")
+    spellSplit = itemSplit[4].split("&")
+    i = 0
+    while i < len(spellSplit):
+        if spellSplit[i] == "7":
+            if int(user.Health) - user.damageTaken < 0:
+                user.modifyHealth(100, 100)
+                spellSplit[i] = "4"
+                itemSplit[4] = "&".join(spellSplit)
+                user.updateSelf("trinket", "-".join(itemSplit))
+                return " \nThe medallion breaks open, reinvigorating you for 100 health and preventing death."
+        i+=1
+    return ""
+
 
 def fireball1(**kwargs):
     user = kwargs.get('user', None)
@@ -97,14 +110,14 @@ Spells = [
     }),
     Spell({
         "ID":"3",
-        "name":"stunimmune",
+        "name":"Stun Immunity",
         "description": "Makes you resilient against stuns.",
         "type":"onhit",
         "function": immune
     }),
     Spell({
         "ID":"4",
-        "name":"vctrinketdrain",
+        "name":"Engorge",
         "description": "Cut the medallion deep into your arm, draining 100 health and storing it within the medallion.",
         "type":"active",
         "function": medallion
@@ -118,7 +131,7 @@ Spells = [
     }),
     Spell({
         "ID":"5",
-        "name":"vctrinketrestore",
+        "name":"Reabsorb",
         "description": "Drain the medallion, restoring the health stored.",
         "type":"active",
         "function": medallion

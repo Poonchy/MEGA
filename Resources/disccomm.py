@@ -6,6 +6,8 @@ import Resources.connection as con
 import Resources.item as itm
 import Resources.spells as spl
 import Resources.shop as shp
+import Resources.npcnames as nms
+import copy
 
 #Importing dungeons
 import Resources.dungeon as dng
@@ -116,13 +118,12 @@ async def pasteLongText(userID, d, font, offset, msg, canvas, ctx, toSplit, defa
             #Get width of word and check if width is too large or if newspace began
             width, height = d.textsize(i + " ", font = font)
             height = font.size + 5
-            if (width + currentWidth > 300 or "\n" in i) and toSplit: #Check if text is too big
+            if (width + currentWidth > 300 or "\n" in i): #Check if text is too big
                 if "\n" in i:
                     i = i.replace("\n","").strip()
-                    if currentHeight > 10:
-                        currentHeight += height
-                        cumulativeHeight += height
-                        currentWidth = offset[0]
+                    currentHeight += height
+                    cumulativeHeight += height
+                    currentWidth = offset[0]
                 else:
                     currentHeight += height
                     cumulativeHeight += height
@@ -239,7 +240,7 @@ async def sendMessage(userID, ctx, textToSend, pasteUser, components = None):
 
 
 async def createCharacter(userID, ctx):
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     if User.exists():
         return await sendMessage(userID, ctx, "You already have a character.", True)
     if User.isRunning(userID):
@@ -299,7 +300,7 @@ async def createCharacter(userID, ctx):
 async def deleteCharacter(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     User.toggleRun(userID)
     #Asks user if they're sure they want to delete their account.
     #userReaction, interaction = await addComponentsAndWaitFor(userID, ctx, "Are you sure you want to delete your account, %PLAYER " + User.Name + ")? \nThis action cannot be reversed.", 5, whom = userID, comps = [res.Button(label = "I'm sure", style = 3, id = "yes"), res.Button(label = "Cancel", style = 4, id = "no")])
@@ -330,7 +331,7 @@ async def showCharacter(userID, ctx):
         if not await UserExists(userID, ctx, True, False):
             return await sendMessage(userID, ctx, "Player does not have a character.", True)
     else:
-        User = char.Character(con.select("*","characters","ID",userID))
+        User = fetchUser(userID, False)
         if not await UserExists(userID, ctx, False, True):
             return
 
@@ -408,12 +409,12 @@ async def showCharacter(userID, ctx):
 
     #Paste character level and gold amount in bottom right corner.
     w, h = d.textsize("Level: " + User.Level, font = Morpheussmall)
-    await pasteLongText(userID, d, Morpheussmall, (300 - w - 2, 210), "Level: " + User.Level, canvas, ctx.message, False, (0,0,0))
+    await pasteLongText(userID, d, Morpheussmall, (300 - w - 5, 210), "Level: " + User.Level, canvas, ctx.message, False, (0,0,0))
 
     #Paste golden coin and golden numerical value in bottom right corner
     w, h = d.textsize(User.Gold + " gold", font = Morpheussmall)
-    await pasteLongText(userID, d, Morpheussmall, (300 - w - 2, 230), User.Gold + " gold", canvas, ctx.message, False, (0,0,0))
-    pasteModel("goldcoin", "", canvas, (300 - 22 - w - 2,235), False)
+    await pasteLongText(userID, d, Morpheussmall, (300 - w - 5, 230), User.Gold + " gold", canvas, ctx.message, False, (0,0,0))
+    pasteModel("goldcoin", "", canvas, (300 - 29 - w,235), False)
 
     #Create a random string, save image, send image and delete image
     msgString = randomString(8)
@@ -422,7 +423,7 @@ async def showCharacter(userID, ctx):
     await ctx.send(file=res.discord.File(imgString)), res.os.remove(imgString)
 
 async def UserExists(userID, ctx, checkRunning, sendmsg):
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     if checkRunning and User.isRunning(userID):
         if sendmsg:
             await sendMessage(userID, ctx,"You are doing something else.", True)
@@ -437,7 +438,7 @@ async def UserExists(userID, ctx, checkRunning, sendmsg):
 async def equip(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     User.toggleRun(userID)
     if not len(ctx.message.content.split(" ")) >= 3:
         res.activeUsers.remove(userID)
@@ -460,7 +461,7 @@ async def equip(userID, ctx):
 async def unequip(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     User.toggleRun(userID)
     if not len(ctx.message.content.split(" ")) >= 3:
         res.activeUsers.remove(userID)
@@ -481,7 +482,7 @@ async def sell(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         res.activeUsers.remove(userID)
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     User.toggleRun(userID)
     if not len(ctx.message.content.split(" ")) >= 3:
         res.activeUsers.remove(userID)
@@ -503,7 +504,7 @@ async def use(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         res.activeUsers.remove(userID)
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     User.toggleRun(userID)
     if not len(ctx.message.content.split(" ")) >= 3:
         res.activeUsers.remove(userID)
@@ -529,70 +530,214 @@ async def use(userID, ctx):
     await sendMessage(userID, ctx, msg, True)
 
 
-
-
 async def train(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         res.activeUsers.remove(userID)
         return
-    cont = True
-    User = char.Character(con.select("*","characters","ID",userID))
-    User.toggleRun(userID)
-    class Mob:
+    User = fetchUser(userID, True)
+    class Mobs:
         ()
-    mob = Mob
-    mob.level = max(1, res.random.randint(int(User.Level) - 1, int(User.Level) + 1))
-    mob.health = 40 + (10 * int(mob.level)) * ((.1 * mob.level) + 1)
-    mob.damage = [round(((.1 * mob.level) + 1) * (9 + (9 * .1 * res.math.sqrt(mob.level)))),round(((.1 * mob.level) + 1)*(14 + (14 * .1 * res.math.sqrt(mob.level))))]
-    msg = "Target's health: " + str(mob.health) + " \n \nPick your action."
-    
-    opts = []
-    i = 0
-    while i < 24:
-        opts.append(res.SelectOption(label=i, value=i))
-        i+=1
-    
-    #Create items options:
-    itemsList = []
-    for i in User.Inventory.split(","):
-        split = i.split("-")
-        if len(split) > 1:
-            item = itm.Item.returnItem(None, split[1])
-            if not item.Slot and split[4] != "F":
-                msg = ""
-                for x in split[4].split("&"):
-                    spell = spl.Spell.findByID(x)
-                    if spell:
-                        if spell.Type == "active":
-                            msg += spell.Description
-                if msg:
-                    itemsList.append(res.SelectOption(label=item.Name, value = split[0].strip(), description=msg))
-    for i in User.returnEquipment():
-        if i.split("-")[4] != "F":
-            for x in i.split("-")[4].split("&"):
-                spell = spl.Spell.findByID(x)
-                if spell and spell.Type == "active":
-                    item = itm.Item.returnItem(None, i.split("-")[1])
-                    itemsList.append(res.SelectOption(label=item.Name, value = i.split("-")[0].strip(), description=spell.Description))
-    
-    response = await addComponentsAndWaitFor(userID, ctx, msg, 30, whom = userID, comps = [
+    Mob = Mobs
+    response = {}
+    response = await addComponentsAndWaitFor(userID, ctx, "Would you like to begin combat?", 30, components=[
         [
-            res.Select(options = opts, placeholder='Skills')
-        ],
-        [
-            res.Select(options = opts, placeholder='Spells')
-        ],
-        [
-            res.Select(options = itemsList, placeholder='Items')
-        ],
-        [
-            res.Button(label = "Attack", style = 4, id = "attack"),
-            res.Button(label = "Flee", style = 1, id = "flee"),
+            res.Button(label = "Begin combat", style = 3, id = "yes"),
+            res.Button(label = "Rest", style = 4, id = "no")
         ]
     ])
-    print (response[userID])
+    while response[userID] == "yes":
+        if response[userID] != "yes":
+            res.activeUsers.remove(userID)
+            return await sendMessage(userID, ctx, "You choose to rest and train another day.", True)
+        Mob.name = nms.randomNPCName()
+        Mob.level = max(1, res.random.randint(int(User.Level) - 1, int(User.Level) + 1))
+        Mob.health = 40 + (10 * int(Mob.level)) * ((.1 * Mob.level) + 1)
+        Mob.maxHealth = Mob.health
+        Mob.damage = [round(((.1 * Mob.level) + 1) * (9 + (9 * .1 * res.math.sqrt(Mob.level)))),round(((.1 * Mob.level) + 1)*(14 + (14 * .1 * res.math.sqrt(Mob.level))))]
+        success, Mob = await combat(userID, ctx, Mob)
+        User = fetchUser(userID, False)
+        if not success and int(User.Health) <= 1:
+            res.activeUsers.remove(userID)
+            return await sendMessage(userID, ctx, "Try as you might, you were no match for " + Mob.name + ". \n \nRest up and train again!", True)
+        elif not success:
+            cont = False
+            break
+        exp, gold, dinged = User.trainRewards(Mob)
+        response = await addComponentsAndWaitFor(userID, ctx, "You succesfully killed " + Mob.name + ", gaining " + gold + " gold and " + exp + "exp." + dinged + " \nNow standing at " + User.Health + " health, would you like to train some more?", 30, components=[
+            [
+                res.Button(label = "Continue", style = 3, id = "yes"),
+                res.Button(label = "Rest", style = 4, id = "no")
+            ]
+        ])
     res.activeUsers.remove(userID)
+    return await sendMessage(userID, ctx, "You choose to rest and train another day.", True)
 
+async def combatMessage(userID, ctx, Mob, combattext, components):
+    canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, False)
+    User = fetchUser(userID, False)
+    #Paste text
+    Morpheus = res.ImageFont.truetype("Art/Fonts/Cthulhumbus.ttf", 17)
+    healthbar = res.Image.open("Art/healthbar.png").convert("RGBA")
+    healthbarFrame = res.Image.open("Art/whitehealthBarFrame.png").convert("RGBA")
+    BitPotion = res.ImageFont.truetype("Art/Fonts/BitPotion.ttf", 28)
+    w, h = draw.textsize(User.Name, font = Morpheus)
+    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "%PLAYER " + User.Name + ")", canvas, ctx, True)
+    remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
+    ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
+    canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
+    canvas.paste(healthbarFrame, (0, heightCheck), mask=healthbarFrame)
+    w, h = draw.textsize(User.Health + " / " + str((int(User.Stamina) * 10)), font = BitPotion)
+    await pasteLongText(userID, draw, BitPotion, (150 - (w/2),heightCheck - 1), User.Health + " / " + str((int(User.Stamina) * 10)), canvas, ctx.message, False, (255,255,255))
+    heightCheck += 30
+    w, h = draw.textsize("VS.", font = Morpheus)
+    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "VS.", canvas, ctx, True)
+    w, h = draw.textsize(Mob.name.split("%BOSS")[1].split(" )")[0], font = Morpheus)
+    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], Mob.name, canvas, ctx, True)
+    remainingHealth = int((int(Mob.health)/(int(Mob.maxHealth))) * 300)
+    ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
+    canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
+    canvas.paste(healthbarFrame, (0, heightCheck), mask=healthbarFrame)
+    w, h = draw.textsize(str(int(Mob.health)) + " / " + str(int(Mob.maxHealth)), font = BitPotion)
+    await pasteLongText(userID, draw, BitPotion, (150 - (w/2),heightCheck - 1), str(int(Mob.health)) + " / " + str(int(Mob.maxHealth)), canvas, ctx.message, False, (255,255,255))
+    heightCheck += 30
+    
+
+    
+
+    
+    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], combattext, canvas, ctx, True)
+
+    #Crop the image nicely and send it to Discord, then delete picture
+    newctx = canvas.crop((0,0,300,heightCheck))
+    msgString = randomString(8)
+    imgString = msgString + ".png"
+    newctx.save(imgString, format="png")
+    if components:
+        return await ctx.send(file=res.discord.File((imgString)), components = components), res.os.remove(imgString)
+    else:
+        return await ctx.send(file=res.discord.File((imgString))), res.os.remove(imgString)
+async def addCombatComponentsAndWaitFor(userID, ctx, Mob, msgtosend, timeouts, **kwargs):
+    labelToHold = {}
+    components = []
+    def Check(userID, response, label):
+        usersReactions[userID] = response
+        labelToHold["label"] = label.label
+        if hasattr(label, "id"):
+            labelToHold["label"] = ""
+        for k in usersReactions:
+            if not usersReactions[k]:
+                return False
+        return True
+    usersReactions = {}
+    for key, value in kwargs.items():
+        if "whom" in key:
+            usersReactions[value] = None
+        else:
+            components.append(value)
+    msg, _ = await combatMessage(userID, ctx, Mob, msgtosend, components[0])
+    try:
+        done, pending = await res.asyncio.wait([
+            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value, i.component[0])),
+            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id, i.component))
+        ], return_when=res.asyncio.FIRST_COMPLETED, timeout=timeouts)
+        for task in done:
+            interaction = task.result()
+        for i in components[0]:
+            for x in i:
+                x.disabled = True
+                if labelToHold["label"]:
+                    x.placeholder = labelToHold["label"]
+        await interaction.respond(type=7, components = components[0])
+    except:
+        for i in components[0]:
+            for x in i:
+                x.disabled = True
+                x.placeholder = ""
+        await msg.edit(components = components[0])
+
+    return usersReactions
+
+async def combat(userID, ctx, Mob):
+    User = fetchUser(userID, False)
+    cont = True
+    User.procs = []
+    User.onhits = []
+    User.stunned = True
+    User.toggleRun(userID)
+    Mob = Mob
+    mesg = ""
+    while cont:
+        mesg += " \nPick your action."
+        opts = []
+        i = 0
+        while i < 24:
+            opts.append(res.SelectOption(label=i, value=i))
+            i+=1
+        #Create items options:
+        itemsList = []
+        for i in User.returnEquipment():
+            if i.split("-")[4] != "F":
+                for x in i.split("-")[4].split("&"):
+                    spell = spl.Spell.findByID(x)
+                    if spell and spell.Type == "active":
+                        item = itm.Item.returnItem(None, i.split("-")[1])
+                        itemsList.append(res.SelectOption(label=item.Name, value = "item-" + i.split("-")[0].strip(), description=spell.Name))
+                    elif spell and spell.Type == "proc":
+                        User.procs.append(spell)
+                    elif spell and spell.Type == "onhit":
+                        User.onhits.append(spell)
+        for i in User.Inventory.split(","):
+            split = i.split("-")
+            if len(split) > 1:
+                item = itm.Item.returnItem(None, split[1])
+                if not item.Slot and split[4] != "F":
+                    msg = ""
+                    for x in split[4].split("&"):
+                        spell = spl.Spell.findByID(x)
+                        if spell:
+                            if spell.Type == "active":
+                                msg += spell.Name + ", "
+                    if msg:
+                        itemsList.append(res.SelectOption(label=item.Name, value = "item-" + split[0].strip(), description=msg[0:-2]))
+        noItems = [res.SelectOption(label = "No items found", value = "doesntmatter")]
+        response = await addCombatComponentsAndWaitFor(userID, ctx, Mob, mesg, 30, whom = userID, comps = [
+            [
+                res.Select(options = itemsList if itemsList else noItems, placeholder='Items' if itemsList else "No items found", disabled = False if itemsList else True)
+            ],
+            [
+                res.Button(label = "Attack", style = 4, id = "attack"),
+                res.Button(label = "Flee", style = 1, id = "flee"),
+            ]
+        ])
+        if response[userID] == "attack":
+            dmgDealt = User.calculateDamagedealt(Mob)
+            mesg = " \nYou dealt " + str(dmgDealt) + " damage."
+            Mob.health -= dmgDealt
+        elif response[userID] == "flee":
+            return False, Mob
+        elif response[userID]:
+            splitR = response[userID].split("-")
+            if "item" in splitR:
+                itemString = User.findByGlobalID(splitR[1])
+                success, typemsg = User.use(itemString.split("-"))
+                mesg = typemsg + " \n"
+        else:
+            cont = False
+        if Mob.health < 0:
+            cont = False
+            break
+        dmgTaken, onhits = User.calculateDamageTaken(Mob)
+        User.modifyHealth(-dmgTaken, -dmgTaken)
+        if int(User.Health) <= 0:
+            cont = False
+        mesg += " \n \nYou get hit for " + str(dmgTaken) + " damage."
+        mesg += onhits
+    if int(User.Health) <= 0:
+        User.updateHealth()
+        User.updateSelf("Health", "1")
+        return False, Mob
+    else:
+        return True, Mob
 
 
 async def inspect(userID, ctx):
@@ -606,7 +751,7 @@ async def inspect(userID, ctx):
             return await sendMessage(userID, ctx, "That user does not have a character.", True)
         else:
             return await sendMessage(userID, ctx, "You do not have a character.", True)
-    User = char.Character(con.select("*","characters","ID",userid))
+    User = fetchUser(userID, False)
     msg = User.Name + " is wearing: \n"
     msg += User.inspect()
     return await sendMessage(userID, ctx, msg, True)
@@ -614,11 +759,10 @@ async def inspect(userID, ctx):
 async def getResources(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    res.activeUsers.append(userID)
     if not len(ctx.message.content.split(" ")) >= 3:
         res.activeUsers.remove(userID)
         return await sendMessage(userID, ctx, "Type which resource you'd like to gather.", True)
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, True)
     type = "ore"
     if User.Class == "mage":
         type = "cloth"
@@ -678,7 +822,7 @@ async def showResources(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
     msg = "Your resources: \n "
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     listOfResources = User.Resources.split(",")
     if User.Resources.count("0") == 4:
         return await sendMessage(userID, ctx, "You do not have any resources. Go ahead and gather some!", True)
@@ -696,7 +840,7 @@ async def queryItem(userID, ctx):
     if not len(ctx.message.content.split(" ")) >= 3:
         return await sendMessage(userID, ctx, "Type which item you'd like to see.", True)
     if await UserExists(userID, ctx, False, False):
-        User = char.Character(con.select("*","characters","ID",userID))
+        User = fetchUser(userID, False)
         race = User.Race
     else:
         race = "orc"
@@ -707,7 +851,7 @@ async def queryItem(userID, ctx):
     #Check if user has it in bag
     itemString = ""
     if await UserExists(userID, ctx, False, False):
-        User = char.Character(con.select("*","characters","ID",userID))
+        User = fetchUser(userID, False)
         if item.Slot:
             if User.checkIfWearingItem(item):
                 itemString = getattr(User, item.Slot)
@@ -790,7 +934,7 @@ async def showItemData(userID, ctx, itemString):
     
     if item.Level and item.Level != "F":
         color = (255,255,255)
-        User = char.Character(con.select("*","characters","ID",userID))
+        User = fetchUser(userID, False)
         if User.exists():
             color = (255,255,255)
             if item.Level > User.Level:
@@ -806,23 +950,40 @@ async def showItemData(userID, ctx, itemString):
         for i in spellSplit:
             spell = spl.Spell.findByID(i)
             if spell.Type == "active":
-                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Use: " + spell.Description, canvas, ctx, True, (30,255,0))
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Use: " + spell.Description + " %ITEM255,255,255 " + spell.Name, canvas, ctx, False, (30,255,0))
             elif spell.Type == "proc":
-                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "On Hit: " + spell.Description, canvas, ctx, True, (30,255,0))
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "On Hit: " + spell.Description + " %ITEM255,255,255 " + spell.Name, canvas, ctx, False, (30,255,0))
             else:
-                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Equipped: " + spell.Description, canvas, ctx, True, (30,255,0))
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Equipped: " + spell.Description + " %ITEM255,255,255 " + spell.Name, canvas, ctx, False, (30,255,0))
+
+    """ if itemSegments[4] != "F":
+        spellSplit = itemSegments[4].split("&")
+        if "" in spellSplit:
+            spellSplit.remove("")
+        for i in spellSplit:
+            spell = spl.Spell.findByID(i)
+            if spell.Type == "active":
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), spell.Name, canvas, ctx, False, (255,255,255))
+            elif spell.Type == "proc":
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), spell.Name, canvas, ctx, False, (255,255,255))
+            else:
+                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), spell.Name, canvas, ctx, False, (255,255,255)) """
+
+
 
     if itemSegments[5] != "F":
         if int(itemSegments[5]) > 1:
-            heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), itemSegments[5] + " Charges", canvas, ctx, True, (255,255,255))
+            heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), itemSegments[5] + " Charges", canvas, ctx, False, (255,255,255))
         else:
-            heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), itemSegments[5] + " Charge", canvas, ctx, True, (255,255,255))
+            heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), itemSegments[5] + " Charge", canvas, ctx, False, (255,255,255))
+    
+    
     if item.Flavor:
-        heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), item.Flavor, canvas, ctx, True, (251, 203, 2))
+        heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), item.Flavor, canvas, ctx, False, (251, 203, 2))
     if item.Value:
         w, h = d.textsize("Sell value: " + item.Value, Morpheussmall)
         pasteModel("goldcoin", "", canvas, (10+w, heightCheck+7), False)
-        heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Sell value: " + item.Value, canvas, ctx, True, (255,255,255))
+        heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Sell value: " + item.Value, canvas, ctx, False, (255,255,255))
     pasteModel("topandbot", "", canvas, (0, heightCheck + 2), False)
     newItem = canvas.crop((0,0,300,heightCheck + 7))
     msgString = randomString(8)
@@ -842,7 +1003,7 @@ def returnAllInstancesOfItem(User, itemName):
     return allItemsFound
     
 async def showAllUniqueInInventory(userID, ctx, itemName, msgToSend):
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     ifExists = itm.Item.returnItem(itemName)
     if not ifExists.exists():
         return await sendMessage(userID, ctx, "Item does not exist.", True)
@@ -857,25 +1018,19 @@ async def showAllUniqueInInventory(userID, ctx, itemName, msgToSend):
     if len(itemsFound) == 1:
         return itemsFound[0]
     #Case when more than one item is chosen
-    itemAndEmoji = {}
-    count = ["ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE"]
-    emojis = ["{}\N{COMBINING ENCLOSING KEYCAP}".format(num) for num in range(1, 10)]
-    for i in range(len(itemsFound)):
-        Morpheus = res.ImageFont.truetype("Art/Fonts/Cthulhumbus.ttf", 17)
-        canvas = res.Image.new('RGBA', (1,1), (0, 0, 0, 0))
-        d = res.ImageDraw.Draw(canvas)
-        word = count[i]
-        pad = " "
-        wordWidth, wordHeight = d.textsize(word, font = Morpheus)
-        padWidth, padHeight = d.textsize(pad, font = Morpheus)
-        del padHeight, wordHeight
-        while padWidth + (wordWidth/2) < 140:
-            pad += " "
-            padWidth, padHeight = d.textsize(pad, font = Morpheus)
-        await sendMessage(userID, ctx, pad + count[i], False)
-        await showItemData(userID, ctx, "-".join(itemsFound[i]))
-        itemAndEmoji[itemsFound[i][0]] = emojis[i]
-    reaction, cpumsg = await addReactionsAndWaitFor(userID, ctx, msgToSend, 10, whom = userID, **itemAndEmoji)
+    compss = []
+    for i in itemsFound:
+        item = itm.Item.returnItem(None, i[1])
+        print (item.Name)
+        desc = ""
+        for x in i[4].split("&"):
+            spell = spl.Spell.findByID(x)
+            desc += spell.Name + ", "
+        desc = desc[0:-2]
+        compss.append(res.SelectOption(label = item.Name, value = i[0], description=desc))
+        print (compss)
+        await showItemData(userID, ctx, "-".join(i))
+    reaction = await addComponentsAndWaitFor(userID, ctx, msgToSend, 10, whom = userID, comps = [res.Select(options=compss)])
     if not reaction[userID]:
         return None
     for i in itemsFound:
@@ -891,7 +1046,7 @@ async def showAllUniqueInInventory(userID, ctx, itemName, msgToSend):
 async def craftItem(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     if not len(ctx.message.content.split(" ")) >= 3:
         return await sendMessage(userID, ctx, "Type which item you'd like to craft.", True)
     itemName = filterSpecialChars(subStringAfter("craft", ctx.message.content), True, False)
@@ -936,7 +1091,7 @@ async def craftItem(userID, ctx):
 async def showInventory(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     if User.Inventory == "" or User.Inventory == ",":
         return await sendMessage(userID, ctx, "Your inventory is empty.", True)
     msg = "Your inventory:"
@@ -951,7 +1106,7 @@ async def showInventory(userID, ctx):
 async def showFullInventory(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     if User.Inventory == "" or User.Inventory == ",":
         return await sendMessage(userID, ctx, "Your inventory is empty.", True)
 
@@ -1010,7 +1165,7 @@ async def showFullInventory(userID, ctx):
             
             if item.Level and item.Level != "F":
                 color = (255,255,255)
-                User = char.Character(con.select("*","characters","ID",userID))
+                User = fetchUser(userID, False)
                 if User.exists():
                     color = (255,255,255)
                     if item.Level > User.Level:
@@ -1061,7 +1216,13 @@ async def showFullInventory(userID, ctx):
     return await sendMessage(userID, ctx, "If the picture seems too small, open it in your browser.", True)
 
 
-
+def fetchUser(userID, toggleRun):
+    User = char.Character(con.select("*","characters","ID",userID))
+    if User.Health:
+        User.updateHealth()
+    if toggleRun:
+        User.toggleRun(userID)
+    return User
 
 
 
@@ -1077,9 +1238,13 @@ def checkAllVoted(dicts):
     return True
 #Sends a ctx using sendMessage, adds specified emojis and waits for specified user(s) to respond. Returns a dict with user(s) and their reaction(s)
 async def addComponentsAndWaitFor(userID, ctx, msgToSend, timeouts, **kwargs):
+    labelToHold = {}
     components = []
-    def Check(userID, response):
+    def Check(userID, response, label):
         usersReactions[userID] = response
+        labelToHold["label"] = label.label
+        if hasattr(label, "id"):
+            labelToHold["label"] = ""
         for k in usersReactions:
             if not usersReactions[k]:
                 return False
@@ -1093,21 +1258,22 @@ async def addComponentsAndWaitFor(userID, ctx, msgToSend, timeouts, **kwargs):
     msg, _ = await sendMessage(userID, ctx, msgToSend, True, components[0])
     try:
         done, pending = await res.asyncio.wait([
-            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value)),
-            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id))
+            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value, i.component[0])),
+            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id, i.component))
         ], return_when=res.asyncio.FIRST_COMPLETED, timeout=timeouts)
         for task in done:
             interaction = task.result()
         for i in components[0]:
             for x in i:
                 x.disabled = True
-                x.placeholder = usersReactions[userID]
+                if labelToHold["label"]:
+                    x.placeholder = labelToHold["label"]
         await interaction.respond(type=7, components = components[0])
     except:
         for i in components[0]:
             for x in i:
                 x.disabled = True
-                x.placeholder = usersReactions[userID]
+                x.placeholder = ""
         await msg.edit(components = components[0])
 
     return usersReactions
@@ -1134,7 +1300,7 @@ async def shop(userID, ctx):
         return
     if not len(ctx.message.content.split(" ")) >= 3:
         return await sendMessage(userID, ctx, "Type which shop you'd like to browse.", True)
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     shopName = filterSpecialChars(subStringAfter("shop", ctx.message.content), True, False)
     Shop = shp.Shop.findShop(shopName)
     if not Shop:
@@ -1148,11 +1314,11 @@ async def shop(userID, ctx):
     itemAndEmoji = {}
     for i in range(len(Shop.Items)):
         item = itm.Item.returnItem(None, str(Shop.Items[i]))
-        comps.append(res.Button(label = item.Name, id = item.ID, style = 3))
+        comps.append(res.Button(label = item.Name, id = str(i), style = 3))
         msg += item.returnFullItemName() + " \nCost: " + str(Shop.Prices[i]) + " \n \n"
     comps.append(res.Button(label = "Leave", id = "exit", style = 4))
     msg = msg[:-4]
-    reaction  = await addComponentsAndWaitFor(userID, ctx, msg, 40, whom = userID, comps = comps)
+    reaction = await addComponentsAndWaitFor(userID, ctx, msg, 40, whom = userID, comps = comps)
     if not reaction[userID] or reaction[userID] == "exit":
         res.activeUsers.remove(userID)
         return await sendMessage(userID, ctx, Shop.Bye, True)
@@ -1173,10 +1339,9 @@ async def runDungeon(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
     if not len(ctx.message.content.split(" ")) >= 3:
-        return await sendMessage(userID, ctx, "Type which dungeon you'd like to run.", True)
-    
+        return await sendMessage(userID, ctx, "Type which dungeon you'd like to run.", True) 
     cont = True
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, True)
     dungeon = []
     curLockout = ""
     nameOfDungeon = filterSpecialChars(subStringAfter("run", ctx.message.content), True, False)
@@ -1195,7 +1360,13 @@ async def runDungeon(userID, ctx):
     else:
         return await sendMessage(userID, ctx, "That dungeon doesn't exist.", True)
     User.toggleRun(userID)
-    userReaction, cpumsg = await addReactionsAndWaitFor(userID, ctx, dungeon.intro, 60, whom = userID, fight='⚔', flee='🏃')
+
+    userReaction = await addComponentsAndWaitFor(userID, ctx, dungeon.intro, 60, whom = userID, comps=[
+        [
+            res.Button(label = "Enter dungeon", id = "fight", style = 4),
+            res.Button(label = "Flee", id = "flee", style = 1),
+        ]
+    ])
     if not userReaction[userID] or userReaction[userID] == "flee":
         res.activeUsers.remove(userID)
         return await sendMessage(userID, ctx, "After contemplating for awhile, you choose to flee and live another day.", True)
@@ -1205,8 +1376,23 @@ async def runDungeon(userID, ctx):
     #Now the fun begins
     while cont:
         curLetter = curLockout[int(dungeon.cPoS.ID) + 7]
-        turns = {"forward":"🔼", "back":"🔽", "left":"◀", "right":"▶"}
-        emojis = {"flee":'🏃'}
+        possibleMoves = [
+            [
+                res.Button(label = "🧩", style = 2, disabled=True, id = "interact"),
+                res.Button(label = "🔼", style = 2, disabled=True, id = "forward"),
+                res.Button(label = "🎁", style = 2, disabled=True, id = "treasure"),
+            ],
+            [
+                res.Button(label = "◀️", style = 2, disabled=True, id = "left"),
+                res.Button(label = "🏃", style = 1, id = "flee"),
+                res.Button(label = "▶️", style = 2, disabled=True, id = "right"),
+            ],
+            [
+                res.Button(label = "⚔️", style = 2, disabled=True, id = "fight"),
+                res.Button(label = "🔽", style = 2, disabled=True, id = "back"),
+                res.Button(label = "❓", style = 2, disabled=True, id = "cmode")
+            ]
+        ]
         msg = ""
         if curLetter != "A" and dungeon.cPoS.clear:
             msg = dungeon.cPoS.clear
@@ -1220,61 +1406,103 @@ async def runDungeon(userID, ctx):
             res.activeUsers.remove(userID)
             return await sendMessage(userID, ctx, dungeon.cPoS.name + " \n \n" + msg, True)
         
+        def toggleStatus(k, status):
+            if str(k) == "forward":
+                possibleMoves[0][1].disabled = status
+                if not status:
+                    possibleMoves[0][1].style = 1
+                else:
+                    possibleMoves[0][1].style = 4
+            elif str(k) == "right":
+                possibleMoves[1][2].disabled = status
+                if not status:
+                    possibleMoves[1][2].style = 1
+                else:
+                    possibleMoves[1][2].style = 4
+            elif str(k) == "left":
+                possibleMoves[1][0].disabled = status
+                if not status:
+                    possibleMoves[1][0].style = 1
+                else:
+                    possibleMoves[1][0].style = 4
+            else:
+                possibleMoves[2][1].disabled = status
+                if not status:
+                    possibleMoves[2][1].style = 1
+                else:
+                    possibleMoves[2][1].style = 4
+
         for k in validMoves:
             if dungeon.cPoS.boss:
                 if str(k) == "forward":
                     if curLetter != "A":
-                        emojis[k] = turns[k]
+                        toggleStatus(k, False)
                 elif str(k) == "right" or str(k) == 'left':
                     if dungeon.cPoS.boss.type != "boss":
-                        emojis[k] = turns[k]
+                        toggleStatus(k, False)
                     elif dungeon.cPoS.boss.type == "boss" and curLetter != "A":
-                        emojis[k] = turns[k]
+                        toggleStatus(k, False)
                 else:
-                    emojis[str(k)] = turns[k]
+                    toggleStatus(str(k), False)
             else:
-                emojis[k] = turns[k]
+                toggleStatus(str(k), False)
         
         #Checks for boss
         if dungeon.cPoS.boss and dungeon.cPoS.boss.type != "rare" and curLetter == "A":
             if dungeon.cPoS.boss.cmodecheck and dungeon.cPoS.boss.cmodecheck(User):
-                emojis["cmode"] = dungeon.cPoS.boss.cmode
-            emojis["fight"] ='⚔'
+                possibleMoves[2][2].disabled = False
+                possibleMoves[2][2].label = dungeon.cPoS.boss.cmode
+                possibleMoves[2][2].style = 4
+            possibleMoves[2][0].disabled = False
+            possibleMoves[2][0].style = 4
         elif dungeon.cPoS.boss and dungeon.cPoS.boss.type == "rare" and curLetter == "A" or curLetter == "E" and (curLetter != 'D' or curLetter != 'B' or curLetter != 'F'):
             roll = res.random.randint(0, 100)
             if roll <= int(dungeon.cPoS.boss.chance) or curLetter == "E":
                 msg += dungeon.cPoS.boss.suprise
-                emojis["fight"] ='⚔'
+                possibleMoves[2][0].disabled = False
                 curLockout = User.updateLockout("E", curLockout, int(dungeon.cPoS.ID))
                 curLetter = "E"
             else:
                 curLockout = User.updateLockout("D", curLockout, int(dungeon.cPoS.ID))
                 if dungeon.cPoS.treasure:
-                    emojis["treasure"] = '🎁'
+                    possibleMoves[0][2].disabled = False 
+                    possibleMoves[0][2].style = 3
                     curLetter = 'F'
                 elif dungeon.cPoS.interactable:
-                    emojis["interact"] = '🧩'
+                    possibleMoves[0][0].disabled = False
+                    possibleMoves[0][0].style = 3
                     curLetter = 'B'
                 else:
                     curLetter = "D"
         else:
             #checks for other stuff
             if dungeon.cPoS.treasure and (curLetter != "T" and curLetter != 'F'):
-                emojis["treasure"] = '🎁'
+                possibleMoves[0][2].disabled = False 
+                possibleMoves[0][2].style = 3
             if dungeon.cPoS.interactable and (curLetter != "I" and curLetter != "B"):
+                possibleMoves[0][0].disabled = False
+                possibleMoves[0][0].style = 3
                 if dungeon.cPoS.interactable.restriction:
                     for i in dungeon.cPoS.interactable.restriction:
-                        emojis.pop(i, None)
-                emojis["interact"] = '🧩'
-        userReaction, cpumsg = await addReactionsAndWaitFor(userID, ctx, dungeon.cPoS.name + " \n \n" + msg, 120, whom = userID, **emojis)
+                        toggleStatus(str(i), True)
+        userReaction = await addComponentsAndWaitFor(userID, ctx, dungeon.cPoS.name + " \n \n" + msg, 120, whom = userID, comps=possibleMoves)
         if not userReaction[userID] or userReaction[userID] == "flee":
             cont = False
         elif userReaction[userID] == "fight" or userReaction[userID] == "cmode":
+            Mob = copy.deepcopy(dungeon.cPoS.boss)
             if userReaction[userID] == "cmode":
-                User.combat(dungeon.cPoS.boss, True)
+                Mob.health = round(int(Mob.health) * 1.10)
+                temp = Mob.damage.split("-")
+                Mob.damage = [round(int(temp[0])) * 1.10, round(int(temp[1])) * 1.10]
             else:
-                User.combat(dungeon.cPoS.boss, False)
-            if int(User.Health) <= 0:
+                temp = Mob.damage.split("-")
+                Mob.damage = [round(int(temp[0])), round(int(temp[1]))]
+            Mob.health = int(Mob.health)
+            Mob.maxHealth = Mob.health
+            Mob.name = "%BOSS " + Mob.name + ") "
+            success, _ = await combat(userID, ctx, Mob)
+            User = fetchUser(userID, False)
+            if not success and int(User.Health) <= 1:
                 cont = False
                 User.updateSelf("health",1)
                 res.activeUsers.remove(userID)
@@ -1282,7 +1510,7 @@ async def runDungeon(userID, ctx):
                     return await sendMessage(userID, ctx, dungeon.cPoS.boss.cmkill, True)
                 else:
                     return await sendMessage(userID, ctx, dungeon.cPoS.boss.killquote, True)
-            else:
+            elif success:
                 User.updateSelf("health",User.Health)
                 expCalc = round((res.math.sqrt(int(dungeon.cPoS.boss.level)) * 8) * ((.5 * int(dungeon.cPoS.boss.level)) + 1))
                 expGained = User.modifyExp(expCalc, expCalc)
@@ -1313,6 +1541,9 @@ async def runDungeon(userID, ctx):
                     await sendMessage(userID, ctx, dungeon.cPoS.boss.cmdie + msg, True)
                 else:
                     await sendMessage(userID, ctx, dungeon.cPoS.boss.diequote + msg, True)
+            else:
+                cont = False
+                break
         elif userReaction[userID] == "interact":
             if dungeon.cPoS.interactable.req(User):
                 if not dungeon.cPoS.boss:
@@ -1341,8 +1572,7 @@ async def runDungeon(userID, ctx):
                     itemmsg += " \nYou recieved item: " + itemLooted.returnFullItemName()
                 await sendMessage(userID, ctx, dungeon.cPoS.treasure.success + itemmsg, True)
             else:
-                await sendMessage(userID, ctx, dungeon.cPoS.treasure.failure, True)
-        
+                await sendMessage(userID, ctx, dungeon.cPoS.treasure.failure, True)   
         else:
             dungeon.move(userReaction[userID])
     dungeon.cPoS = dungeon.rooms[0]
@@ -1350,5 +1580,5 @@ async def runDungeon(userID, ctx):
     return await sendMessage(userID, ctx, "After contemplating for awhile, you choose to flee and live another day.", True)
 
 def toggleUser(userID):
-    User = char.Character(con.select("*","characters","ID",userID))
+    User = fetchUser(userID, False)
     User.toggleRun(userID)  

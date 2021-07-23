@@ -25,9 +25,6 @@ async def delete(ctx):
     await pyd.deleteCharacter(authortoken, ctx)
 
 
-
-
-
 @pyd.res.bot.command()
 async def equip(ctx):
     authortoken = str(ctx.author.id)
@@ -65,6 +62,7 @@ async def train(ctx):
 
 @pyd.res.bot.command()
 async def item(ctx):
+    print (ctx)
     authortoken = str(ctx.author.id)
     await pyd.queryItem(authortoken, ctx)
 
