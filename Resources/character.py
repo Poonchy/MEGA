@@ -236,10 +236,10 @@ class Character:
         #adds offhand damage if there was any and deal damage
         if self.ohDamage > 0:
             self.damageDealt += .5 * round(self.ohDamage * self.statScaling)
-
+        msg = ""
         for i in self.procs:
-            i.Function({"user": self, "mob":mob})
-        return self.damageDealt
+            msg += i.Function(user= self, mob= mob)
+        return self.damageDealt, msg
 
 
 

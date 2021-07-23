@@ -303,7 +303,6 @@ async def deleteCharacter(userID, ctx):
     #Asks user if they're sure they want to delete their account.
     #userReaction, interaction = await addComponentsAndWaitFor(userID, ctx, "Are you sure you want to delete your account, %PLAYER " + User.Name + ")? \nThis action cannot be reversed.", 5, whom = userID, comps = [res.Button(label = "I'm sure", style = 3, id = "yes"), res.Button(label = "Cancel", style = 4, id = "no")])
     userReaction = await addComponentsAndWaitFor(userID, ctx, "Are you sure you want to delete your account, %PLAYER " + User.Name + ")? \nThis action cannot be reversed.", 20, whom = userID, comps = [
-        res.Select(options=[res.SelectOption(label="yes", value="yes"), res.SelectOption(label="no", value="no")]),
         [
             res.Button(label = "I'm sure", style = 3, id = "yes"),
             res.Button(label = "Cancel", style = 4, id = "no")
@@ -589,8 +588,11 @@ async def combatMessage(userID, ctx, Mob, combattext, components):
     heightCheck += 30
     w, h = draw.textsize("VS.", font = Morpheus)
     heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "VS.", canvas, ctx, True)
-    w, h = draw.textsize(Mob.name.split("%BOSS")[1].split(" )")[0], font = Morpheus)
-    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], Mob.name, canvas, ctx, True)
+    w, h = draw.textsize(Mob.name.split("%BOSS")[1].split(")")[0], font = Morpheus)
+    if w > 286:
+        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], Mob.name, canvas, ctx, True)
+    else:
+        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], Mob.name, canvas, ctx, True)
     remainingHealth = int((int(Mob.health)/(int(Mob.maxHealth))) * 300)
     ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
     canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
@@ -708,8 +710,9 @@ async def combat(userID, ctx, Mob):
             ]
         ])
         if response[userID] == "attack":
-            dmgDealt = User.calculateDamagedealt(Mob)
+            dmgDealt, procs = User.calculateDamagedealt(Mob)
             mesg = " \nYou dealt " + str(dmgDealt) + " damage."
+            mesg += procs
             Mob.health -= dmgDealt
         elif response[userID] == "flee":
             return False, Mob
