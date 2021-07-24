@@ -817,8 +817,6 @@ async def getResources(userID, ctx):
             cont = False
             res.activeUsers.remove(userID)
             await sendMessage(userID, ctx, "You chose to rest and gather another day another day.", True)
-        else:
-            await cpumsg.delete()
 async def showResources(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
         return
