@@ -807,7 +807,7 @@ async def getResources(userID, ctx):
         User.updateSelf("resources", resources)
         User.updateSelf("health", str(int(float(newHealth))))
         
-        reaction, cpumsg = await addComponentsAndWaitFor(userID, ctx, "You succesfully gathered 1 " + resource + " " + type + ", but were attacked and lost " + str(int(float(healthLostNum))) + " health in the process. \n \nWould you like to gather another or rest?", 30, whom = userID, comps = [
+        reaction = await addComponentsAndWaitFor(userID, ctx, "You succesfully gathered 1 " + resource + " " + type + ", but were attacked and lost " + str(int(float(healthLostNum))) + " health in the process. \n \nWould you like to gather another or rest?", 30, whom = userID, comps = [
             [
                 res.Button(label = "Keep Gathering!", style = 1, id = "yes"),
                 res.Button(label = "Rest.", style = 1, id = "no")
@@ -956,21 +956,6 @@ async def showItemData(userID, ctx, itemString):
                 heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "On Hit: " + spell.Description + " %ITEM255,255,255 " + spell.Name, canvas, ctx, False, (30,255,0))
             else:
                 heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), "Equipped: " + spell.Description + " %ITEM255,255,255 " + spell.Name, canvas, ctx, False, (30,255,0))
-
-    """ if itemSegments[4] != "F":
-        spellSplit = itemSegments[4].split("&")
-        if "" in spellSplit:
-            spellSplit.remove("")
-        for i in spellSplit:
-            spell = spl.Spell.findByID(i)
-            if spell.Type == "active":
-                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), spell.Name, canvas, ctx, False, (255,255,255))
-            elif spell.Type == "proc":
-                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), spell.Name, canvas, ctx, False, (255,255,255))
-            else:
-                heightCheck, canvas = await pasteLongText(userID, d, Morpheussmall, (7, heightCheck), spell.Name, canvas, ctx, False, (255,255,255)) """
-
-
 
     if itemSegments[5] != "F":
         if int(itemSegments[5]) > 1:
