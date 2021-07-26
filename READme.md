@@ -1,1 +1,0 @@
-This discord bot is not yet public! I just needed to get it on github for version control
