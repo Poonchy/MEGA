@@ -11,8 +11,8 @@ async def hero(ctx):
 @pyd.res.bot.command()
 async def help(ctx):
     authortoken = str(ctx.author.id)
-    await ctx.message.author.send("https://megapy.netlify.com")
-    await pyd.sendMessage(authortoken, ctx, "Head over to my website to see a full list of my commands!", False)
+    embed = pyd.res.discord.Embed(title="Head over to my website to see a full list of my commands!", description="https://megapy.netlify.com/commands") #,color=Hex code
+    await ctx.send(embed=embed)
 
 @pyd.res.bot.command()
 async def create(ctx):

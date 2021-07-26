@@ -52,7 +52,10 @@ async def createMessageCanvas(userID, ctx, printUser):
 async def pasteUser(userID, ctx, canvas, d):
     discordUser = await ctx.guild.query_members(user_ids=[userID])
     discordUser = discordUser[0]
-    pfp = str(discordUser.avatar_url).replace("webp", "png")
+    try:
+        pfp = str(discordUser.avatar_url).replace("webp", "png")
+    except:
+        pfp = str(discordUser.avatar).replace("webp", "png")
     r = res.requests.get(pfp, allow_redirects=True)
     pfpsString = randomString(8)
     pfpString = pfpsString + ".png"
@@ -155,13 +158,20 @@ async def pasteLongText(userID, d, font, offset, msg, canvas, ctx, toSplit, defa
                         d.text((currentWidth, currentHeight), ":", fill=color, font = font)
                         currentWidth += width
                     coloring = False
-                elif "]" in i and coloring == "ITEM": #if end of item is detected
+                elif "]" in i or ")" in i and coloring == "ITEM": #if end of item is detected
                     #paste the item itself
-                    i = i.split("]")
-                    width, height = d.textsize(i[0] + "]", font = font)
-                    d.text((currentWidth, currentHeight), i[0] + "]", fill=color, font = font)
-                    currentWidth += width
-                    color = defaultColor
+                    if "]" in i:
+                        i = i.split("]")
+                        width, height = d.textsize(i[0] + "]", font = font)
+                        d.text((currentWidth, currentHeight), i[0] + "]", fill=color, font = font)
+                        currentWidth += width
+                        color = defaultColor
+                    else:
+                        i = i.split(")")
+                        width, height = d.textsize(i[0], font = font)
+                        d.text((currentWidth, currentHeight), i[0], fill=color, font = font)
+                        currentWidth += width
+                        color = defaultColor
 
                     #Paste substring after
                     width, height = d.textsize(i[1] + " ", font = font)
@@ -258,6 +268,10 @@ async def createCharacter(userID, ctx):
     if len(characterName) > 18:
         res.activeUsers.remove(userID)
         return await sendMessage(userID, ctx, "That name is too long.", True)
+    #checks for profanity
+    if res.profanity.contains_profanity(characterName):
+        res.activeUsers.remove(userID)
+        return await sendMessage(userID, ctx,"Name contains innapropriate words.", True)
     #Checks if name is already taken
     anyOther = char.Character(con.select("*","characters","name",characterName))
     if anyOther.exists():
@@ -265,7 +279,7 @@ async def createCharacter(userID, ctx):
         return await sendMessage(userID, ctx, "That name is already taken.", True)
 
     #Ask user to choose their race and wair for the resonse.
-    raceChosen = await addComponentsAndWaitFor(userID, ctx, "You chose the name %PLAYER " + characterName + "). \n \nNext, choose your race", 30, whom=userID, comps = [
+    raceChosen = await addComponentsAndWaitFor(userID, ctx, "You chose the name %PLAYER " + characterName + "). \n \nNext, choose your race. \n%BOSS Orcs ) have more power (+1 to primary stat). \n %ITEM	0,191,255 Humans) have more health (+1 to stamina).", 30, whom=userID, comps = [
         [
             res.Button(label = "Orc", style = 4, id = "orc"),
             res.Button(label = "Human", style = 1, id = "human")
@@ -281,7 +295,7 @@ async def createCharacter(userID, ctx):
         displayRace = "n orc"
     else:
         displayRace = " human"
-    classChosen = await addComponentsAndWaitFor(userID, ctx, "You chose a" + displayRace + ". \n \nLastly, choose your class", 30, whom=userID, comps = [
+    classChosen = await addComponentsAndWaitFor(userID, ctx, "You chose a" + displayRace + ". \n \nLastly, choose your class \n%ITEM198,155,109 Warriors) rely on heavy armor to wear their opponents out. \n %ITEM255,244,104 Rogues) rely on a mix of defence and power to defeat their foes. \n %ITEM63,199,235 Mages) have very powerful attacks, but lack in defences.", 30, whom=userID, comps = [
         [
             res.Button(label = "Warrior", style = 4, id = "warrior"),
             res.Button(label = "Mage", style = 1, id = "mage"),
@@ -477,7 +491,6 @@ async def unequip(userID, ctx):
     await sendMessage(userID, ctx, msg, True)
 async def sell(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
-        res.activeUsers.remove(userID)
         return
     User = fetchUser(userID, False)
     User.toggleRun(userID)
@@ -499,7 +512,6 @@ async def sell(userID, ctx):
     await sendMessage(userID, ctx, msg, True)
 async def use(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
-        res.activeUsers.remove(userID)
         return
     User = fetchUser(userID, False)
     User.toggleRun(userID)
@@ -529,7 +541,6 @@ async def use(userID, ctx):
 
 async def train(userID, ctx):
     if not await UserExists(userID, ctx, True, True):
-        res.activeUsers.remove(userID)
         return
     User = fetchUser(userID, True)
     class Mobs:
@@ -709,6 +720,8 @@ async def combat(userID, ctx, Mob):
                 res.Button(label = "Flee", style = 1, id = "flee"),
             ]
         ])
+        if not response[userID]:
+            return False, Mob
         if response[userID] == "attack":
             dmgDealt, procs = User.calculateDamageDealt(Mob)
             mesg = " \nYou dealt " + str(dmgDealt) + " damage."

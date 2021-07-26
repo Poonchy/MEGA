@@ -17,6 +17,7 @@ import string
 from collections import defaultdict
 from discord_components import DiscordComponents, Button, Select, SelectOption, ActionRow
 from discord.ext.commands import Bot
+from better_profanity import profanity
 def mixedCase(*args):
   total = []
   import itertools
