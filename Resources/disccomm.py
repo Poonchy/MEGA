@@ -229,23 +229,23 @@ def fetchColoredModel(modelID, race, subfolder):
     return item.Name
 
 async def sendMessage(userID, ctx, textToSend, pasteUser, components = None):
-    #Create the canvas
-    canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, pasteUser)
+    async with ctx.typing():
+        #Create the canvas
+        canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, pasteUser)
 
-    #Paste text
-    Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
-    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], textToSend, canvas, ctx, True)
+        #Paste text
+        Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
+        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], textToSend, canvas, ctx, True)
 
-    #Crop the image nicely and send it to Discord, then delete picture
-    newctx = canvas.crop((0,0,300,heightCheck))
-    msgString = randomString(8)
-    imgString = msgString + ".png"
-    newctx.save(imgString, format="png")
-    if components:
-        return await ctx.send(file=res.discord.File((imgString)), components = components), res.os.remove(imgString)
-    else:
-        return await ctx.send(file=res.discord.File((imgString))), res.os.remove(imgString)
-
+        #Crop the image nicely and send it to Discord, then delete picture
+        newctx = canvas.crop((0,0,300,heightCheck))
+        msgString = randomString(8)
+        imgString = msgString + ".png"
+        newctx.save(imgString, format="png")
+        if components:
+            return await ctx.send(file=res.discord.File((imgString)), components = components), res.os.remove(imgString)
+        else:
+            return await ctx.send(file=res.discord.File((imgString))), res.os.remove(imgString)
 
 async def createCharacter(userID, ctx):
     User = fetchUser(userID, False)
@@ -315,7 +315,6 @@ async def deleteCharacter(userID, ctx):
     User = fetchUser(userID, False)
     User.toggleRun(userID)
     #Asks user if they're sure they want to delete their account.
-    #userReaction, interaction = await addComponentsAndWaitFor(userID, ctx, "Are you sure you want to delete your account, %PLAYER " + User.Name + ")? \nThis action cannot be reversed.", 5, whom = userID, comps = [res.Button(label = "I'm sure", style = 3, id = "yes"), res.Button(label = "Cancel", style = 4, id = "no")])
     userReaction = await addComponentsAndWaitFor(userID, ctx, "Are you sure you want to delete your account, %PLAYER " + User.Name + ")? \nThis action cannot be reversed.", 20, whom = userID, comps = [
         [
             res.Button(label = "I'm sure", style = 3, id = "yes"),
@@ -345,93 +344,93 @@ async def showCharacter(userID, ctx):
         User = fetchUser(userID, False)
         if not await UserExists(userID, ctx, False, True):
             return
+    async with ctx.typing():
+        User.updateHealth()
+        #Set some initial variables and create canvas
+        heroOffSet = (37,16)
+        canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
+        d = res.ImageDraw.Draw(canvas)
+        Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 24)
+        Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 19)
+        BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
 
-    User.updateHealth()
-    #Set some initial variables and create canvas
-    heroOffSet = (37,16)
-    canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
-    d = res.ImageDraw.Draw(canvas)
-    Morpheusbig = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 24)
-    Morpheussmall = res.ImageFont.truetype("./Art/fonts/Morpheus.TTF", 19)
-    BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
+        #Paste backround and race
+        pasteModel("white", "", canvas, (0,0), False)
+        pasteModel(User.Race, "", canvas, heroOffSet, False)
 
-    #Paste backround and race
-    pasteModel("white", "", canvas, (0,0), False)
-    pasteModel(User.Race, "", canvas, heroOffSet, False)
+        #Start pasting equipment
+        pasteModel(fetchColoredModel(User.Feet.split("-")[2], User.Race, "Feet/"), "Feet/", canvas, heroOffSet, True)
+        pasteModel(fetchColoredModel(User.Legs.split("-")[2], User.Race, "Legs/"), "Legs/", canvas, heroOffSet, True)
+        pasteModel(fetchColoredModel(User.Gloves.split("-")[2], User.Race, "Gloves/"), "Gloves/", canvas, heroOffSet, True)
+        pasteModel(fetchColoredModel(User.Chest.split("-")[2], User.Race, "Chest/"), "Chest/", canvas, heroOffSet, True)
+        pasteModel(fetchColoredModel(User.Waist.split("-")[2], User.Race, "Waist/"), "Waist/", canvas, heroOffSet, True)
+        pasteModel(fetchColoredModel(User.Shoulders.split("-")[2], User.Race, "Shoulders/"), "Shoulders/", canvas, heroOffSet, True)
 
-    #Start pasting equipment
-    pasteModel(fetchColoredModel(User.Feet.split("-")[2], User.Race, "Feet/"), "Feet/", canvas, heroOffSet, True)
-    pasteModel(fetchColoredModel(User.Legs.split("-")[2], User.Race, "Legs/"), "Legs/", canvas, heroOffSet, True)
-    pasteModel(fetchColoredModel(User.Gloves.split("-")[2], User.Race, "Gloves/"), "Gloves/", canvas, heroOffSet, True)
-    pasteModel(fetchColoredModel(User.Chest.split("-")[2], User.Race, "Chest/"), "Chest/", canvas, heroOffSet, True)
-    pasteModel(fetchColoredModel(User.Waist.split("-")[2], User.Race, "Waist/"), "Waist/", canvas, heroOffSet, True)
-    pasteModel(fetchColoredModel(User.Shoulders.split("-")[2], User.Race, "Shoulders/"), "Shoulders/", canvas, heroOffSet, True)
+        #Try to see if helmet shows hair, paste hair if it does
+        item = itm.Item.returnItem(None, User.Helmet.split("-")[2])
+        if item.exists():
+            pasteModel(fetchColoredModel(User.Helmet.split("-")[2], User.Race, "Helmet/"), "Helmet/", canvas, heroOffSet, True)
+        if not item.ShowHair == "no":
+            pasteModel(User.Race + "hair", "", canvas, heroOffSet, False)
+        
+        #Paste weapons
+        pasteModel(fetchColoredModel(User.Mainhand.split("-")[2], "", "Mainhand/"), "Mainhand/", canvas, heroOffSet, True)
+        pasteModel(fetchColoredModel(User.Offhand.split("-")[2], User.Race, "Offhand/"), "Offhand/", canvas, heroOffSet, True)
 
-    #Try to see if helmet shows hair, paste hair if it does
-    item = itm.Item.returnItem(None, User.Helmet.split("-")[2])
-    if item.exists():
-        pasteModel(fetchColoredModel(User.Helmet.split("-")[2], User.Race, "Helmet/"), "Helmet/", canvas, heroOffSet, True)
-    if not item.ShowHair == "no":
-        pasteModel(User.Race + "hair", "", canvas, heroOffSet, False)
-    
-    #Paste weapons
-    pasteModel(fetchColoredModel(User.Mainhand.split("-")[2], "", "Mainhand/"), "Mainhand/", canvas, heroOffSet, True)
-    pasteModel(fetchColoredModel(User.Offhand.split("-")[2], User.Race, "Offhand/"), "Offhand/", canvas, heroOffSet, True)
+        #Retrieve pictures of gold, bars, and frames.
+        healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
+        expbar = res.Image.open("./Art/expbar.png").convert("RGBA")
+        healthbarFrame = res.Image.open("./Art/healthbarframe.png").convert("RGBA")
 
-    #Retrieve pictures of gold, bars, and frames.
-    healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
-    expbar = res.Image.open("./Art/expbar.png").convert("RGBA")
-    healthbarFrame = res.Image.open("./Art/healthbarframe.png").convert("RGBA")
+        #Calculate the health and exp to display, and crop healthbar and exp bar accordingly.
+        remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
+        ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
 
-    #Calculate the health and exp to display, and crop healthbar and exp bar accordingly.
-    remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
-    ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
+        expneeded = 10 * res.math.floor((round((0.04*(int(User.Level)**3))+(0.8*(int(User.Level)**2))+(2*int(User.Level)))))
+        remainingExp = int((int(User.Exp) / int(expneeded)) * 300)
+        ActualExpBar = expbar.crop((0,0,remainingExp,26))
 
-    expneeded = 10 * res.math.floor((round((0.04*(int(User.Level)**3))+(0.8*(int(User.Level)**2))+(2*int(User.Level)))))
-    remainingExp = int((int(User.Exp) / int(expneeded)) * 300)
-    ActualExpBar = expbar.crop((0,0,remainingExp,26))
+        #Paste the healthbar and expbar and their frames
+        canvas.paste(ActualHealthBar, (0, 276), mask=ActualHealthBar)
+        canvas.paste(healthbarFrame, (0, 276), mask=healthbarFrame)
+        canvas.paste(ActualExpBar, (0, 256), mask=ActualExpBar)
+        canvas.paste(healthbarFrame, (0, 256), mask=healthbarFrame)
 
-    #Paste the healthbar and expbar and their frames
-    canvas.paste(ActualHealthBar, (0, 276), mask=ActualHealthBar)
-    canvas.paste(healthbarFrame, (0, 276), mask=healthbarFrame)
-    canvas.paste(ActualExpBar, (0, 256), mask=ActualExpBar)
-    canvas.paste(healthbarFrame, (0, 256), mask=healthbarFrame)
+        #Paste the numerical values of exp and health
+        w, h = d.textsize(User.Health + " / " + str((int(User.Stamina) * 10)), font = BitPotion)
+        await pasteLongText(userID, d, BitPotion, (((300-w)/2),(300- h - 5)), User.Health + " / " + str((int(User.Stamina) * 10)), canvas, ctx.message, False, (0,0,0))
+        w, h = d.textsize(User.Exp + " / " + str(expneeded), font = BitPotion)
+        await pasteLongText(userID, d, BitPotion, (((300-w)/2),(280- h - 5)), User.Exp + " / " + str(expneeded), canvas, ctx.message, False, (0,0,0))
 
-    #Paste the numerical values of exp and health
-    w, h = d.textsize(User.Health + " / " + str((int(User.Stamina) * 10)), font = BitPotion)
-    await pasteLongText(userID, d, BitPotion, (((300-w)/2),(300- h - 5)), User.Health + " / " + str((int(User.Stamina) * 10)), canvas, ctx.message, False, (0,0,0))
-    w, h = d.textsize(User.Exp + " / " + str(expneeded), font = BitPotion)
-    await pasteLongText(userID, d, BitPotion, (((300-w)/2),(280- h - 5)), User.Exp + " / " + str(expneeded), canvas, ctx.message, False, (0,0,0))
+        #Paste the name and race at the top of the screen
+        w, h = d.textsize(User.Name, font = Morpheusbig)
+        await pasteLongText(userID, d, Morpheusbig, (150 - (w/2),-4), "%PLAYER " + User.Name + ")", canvas, ctx.message, False, (0,0,0))
+        w, h = d.textsize(User.Race.title() + " " + User.Class.title(), font = Morpheussmall)
+        await pasteLongText(userID, d, Morpheussmall, (150 - (w/2), 20), User.Race.title() + " " + User.Class.title(), canvas, ctx.message, False, (0,0,0))
 
-    #Paste the name and race at the top of the screen
-    w, h = d.textsize(User.Name, font = Morpheusbig)
-    await pasteLongText(userID, d, Morpheusbig, (150 - (w/2),-4), "%PLAYER " + User.Name + ")", canvas, ctx.message, False, (0,0,0))
-    w, h = d.textsize(User.Race.title() + " " + User.Class.title(), font = Morpheussmall)
-    await pasteLongText(userID, d, Morpheussmall, (150 - (w/2), 20), User.Race.title() + " " + User.Class.title(), canvas, ctx.message, False, (0,0,0))
+        #Paste the armor value and depending on class paste mainstat value
+        await pasteLongText(userID, d, Morpheussmall, (2, 210), "Armor: " + User.Armor, canvas, ctx.message, False, (0,0,0))
+        if User.Class == "warrior":
+            await pasteLongText(userID, d, Morpheussmall, (2, 230), "Strength: " + User.Stat, canvas, ctx.message, False, (0,0,0))
+        elif User.Class == "mage":
+            await pasteLongText(userID, d, Morpheussmall, (2, 230), "Intellect: " + User.Stat, canvas, ctx.message, False, (0,0,0))
+        elif User.Class == "rogue":
+            await pasteLongText(userID, d, Morpheussmall, (2, 230), "Agility: " + User.Stat, canvas, ctx.message, False, (0,0,0))
 
-    #Paste the armor value and depending on class paste mainstat value
-    await pasteLongText(userID, d, Morpheussmall, (2, 210), "Armor: " + User.Armor, canvas, ctx.message, False, (0,0,0))
-    if User.Class == "warrior":
-        await pasteLongText(userID, d, Morpheussmall, (2, 230), "Strength: " + User.Stat, canvas, ctx.message, False, (0,0,0))
-    elif User.Class == "mage":
-        await pasteLongText(userID, d, Morpheussmall, (2, 230), "Intellect: " + User.Stat, canvas, ctx.message, False, (0,0,0))
-    elif User.Class == "rogue":
-        await pasteLongText(userID, d, Morpheussmall, (2, 230), "Agility: " + User.Stat, canvas, ctx.message, False, (0,0,0))
+        #Paste character level and gold amount in bottom right corner.
+        w, h = d.textsize("Level: " + User.Level, font = Morpheussmall)
+        await pasteLongText(userID, d, Morpheussmall, (300 - w - 5, 210), "Level: " + User.Level, canvas, ctx.message, False, (0,0,0))
 
-    #Paste character level and gold amount in bottom right corner.
-    w, h = d.textsize("Level: " + User.Level, font = Morpheussmall)
-    await pasteLongText(userID, d, Morpheussmall, (300 - w - 5, 210), "Level: " + User.Level, canvas, ctx.message, False, (0,0,0))
+        #Paste golden coin and golden numerical value in bottom right corner
+        w, h = d.textsize(User.Gold + " gold", font = Morpheussmall)
+        await pasteLongText(userID, d, Morpheussmall, (300 - w - 5, 230), User.Gold + " gold", canvas, ctx.message, False, (0,0,0))
+        pasteModel("goldcoin", "", canvas, (300 - 29 - w,235), False)
 
-    #Paste golden coin and golden numerical value in bottom right corner
-    w, h = d.textsize(User.Gold + " gold", font = Morpheussmall)
-    await pasteLongText(userID, d, Morpheussmall, (300 - w - 5, 230), User.Gold + " gold", canvas, ctx.message, False, (0,0,0))
-    pasteModel("goldcoin", "", canvas, (300 - 29 - w,235), False)
-
-    #Create a random string, save image, send image and delete image
-    msgString = randomString(8)
-    imgString = msgString + ".png"
-    canvas.save(imgString, format="png")
-    await ctx.send(file=res.discord.File(imgString)), res.os.remove(imgString)
+        #Create a random string, save image, send image and delete image
+        msgString = randomString(8)
+        imgString = msgString + ".png"
+        canvas.save(imgString, format="png")
+        await ctx.send(file=res.discord.File(imgString)), res.os.remove(imgString)
 
 async def UserExists(userID, ctx, checkRunning, sendmsg):
     User = fetchUser(userID, False)
@@ -547,7 +546,7 @@ async def train(userID, ctx):
         ()
     Mob = Mobs
     response = {}
-    response = await addComponentsAndWaitFor(userID, ctx, "Would you like to begin combat?", 30, components=[
+    response = await addComponentsAndWaitFor(userID, ctx, "Would you like to begin combat?", 30, whom = userID, components=[
         [
             res.Button(label = "Begin combat", style = 3, id = "yes"),
             res.Button(label = "Rest", style = 4, id = "no")
@@ -571,7 +570,7 @@ async def train(userID, ctx):
             cont = False
             break
         exp, gold, dinged = User.trainRewards(Mob)
-        response = await addComponentsAndWaitFor(userID, ctx, "You succesfully killed " + Mob.name + ", gaining " + gold + " gold and " + exp + "exp." + dinged + " \nNow standing at " + User.Health + " health, would you like to train some more?", 30, components=[
+        response = await addComponentsAndWaitFor(userID, ctx, "You succesfully killed " + Mob.name + ", gaining " + gold + " gold and " + exp + "exp." + dinged + " \nNow standing at " + User.Health + " health, would you like to train some more?", 30, whom = userID, components=[
             [
                 res.Button(label = "Continue", style = 3, id = "yes"),
                 res.Button(label = "Rest", style = 4, id = "no")
@@ -581,57 +580,62 @@ async def train(userID, ctx):
     return await sendMessage(userID, ctx, "You choose to rest and train another day.", True)
 
 async def combatMessage(userID, ctx, Mob, combattext, components):
-    canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, False)
-    User = fetchUser(userID, False)
-    #Paste text
-    Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
-    healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
-    healthbarFrame = res.Image.open("./Art/whitehealthbarframe.png").convert("RGBA")
-    BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
-    w, h = draw.textsize(User.Name, font = Morpheus)
-    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "%PLAYER " + User.Name + ")", canvas, ctx, True)
-    remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
-    ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
-    canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
-    canvas.paste(healthbarFrame, (0, heightCheck), mask=healthbarFrame)
-    w, h = draw.textsize(User.Health + " / " + str((int(User.Stamina) * 10)), font = BitPotion)
-    await pasteLongText(userID, draw, BitPotion, (150 - (w/2),heightCheck - 1), User.Health + " / " + str((int(User.Stamina) * 10)), canvas, ctx.message, False, (255,255,255))
-    heightCheck += 30
-    w, h = draw.textsize("VS.", font = Morpheus)
-    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "VS.", canvas, ctx, True)
-    w, h = draw.textsize(Mob.name.split("%BOSS")[1].split(")")[0], font = Morpheus)
-    if w > 286:
-        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], Mob.name, canvas, ctx, True)
-    else:
-        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], Mob.name, canvas, ctx, True)
-    remainingHealth = int((int(Mob.health)/(int(Mob.maxHealth))) * 300)
-    ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
-    canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
-    canvas.paste(healthbarFrame, (0, heightCheck), mask=healthbarFrame)
-    w, h = draw.textsize(str(int(Mob.health)) + " / " + str(int(Mob.maxHealth)), font = BitPotion)
-    await pasteLongText(userID, draw, BitPotion, (150 - (w/2),heightCheck - 1), str(int(Mob.health)) + " / " + str(int(Mob.maxHealth)), canvas, ctx.message, False, (255,255,255))
-    heightCheck += 30
-    
+    async with ctx.typing():
+        canvas, heightCheck, draw = await createMessageCanvas(userID, ctx, False)
+        User = fetchUser(userID, False)
+        #Paste text
+        Morpheus = res.ImageFont.truetype("./Art/fonts/Cthulhumbus.ttf", 17)
+        healthbar = res.Image.open("./Art/healthbar.png").convert("RGBA")
+        healthbarFrame = res.Image.open("./Art/whitehealthbarframe.png").convert("RGBA")
+        BitPotion = res.ImageFont.truetype("./Art/fonts/BitPotion.ttf", 28)
+        w, h = draw.textsize(User.Name, font = Morpheus)
+        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "%PLAYER " + User.Name + ")", canvas, ctx, True)
+        remainingHealth = int((int(User.Health)/(int(User.Stamina) * 10)) * 300)
+        ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
+        canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
+        canvas.paste(healthbarFrame, (0, heightCheck), mask=healthbarFrame)
+        w, h = draw.textsize(User.Health + " / " + str((int(User.Stamina) * 10)), font = BitPotion)
+        await pasteLongText(userID, draw, BitPotion, (150 - (w/2),heightCheck - 1), User.Health + " / " + str((int(User.Stamina) * 10)), canvas, ctx.message, False, (255,255,255))
+        heightCheck += 30
+        w, h = draw.textsize("VS.", font = Morpheus)
+        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], "VS.", canvas, ctx, True)
+        w, h = draw.textsize(Mob.name.split("%BOSS")[1].split(")")[0], font = Morpheus)
+        if w > 286:
+            heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], Mob.name, canvas, ctx, True)
+        else:
+            heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [150-(w/2), heightCheck], Mob.name, canvas, ctx, True)
+        remainingHealth = int((int(Mob.health)/(int(Mob.maxHealth))) * 300)
+        ActualHealthBar = healthbar.crop((0,0,remainingHealth,26))
+        canvas.paste(ActualHealthBar, (0, heightCheck), mask=ActualHealthBar)
+        canvas.paste(healthbarFrame, (0, heightCheck), mask=healthbarFrame)
+        w, h = draw.textsize(str(int(Mob.health)) + " / " + str(int(Mob.maxHealth)), font = BitPotion)
+        await pasteLongText(userID, draw, BitPotion, (150 - (w/2),heightCheck - 1), str(int(Mob.health)) + " / " + str(int(Mob.maxHealth)), canvas, ctx.message, False, (255,255,255))
+        heightCheck += 30
+        
 
-    
+        
 
-    
-    heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], combattext, canvas, ctx, True)
+        
+        heightCheck, canvas = await pasteLongText(userID, draw, Morpheus, [5, heightCheck], combattext, canvas, ctx, True)
 
-    #Crop the image nicely and send it to Discord, then delete picture
-    newctx = canvas.crop((0,0,300,heightCheck))
-    msgString = randomString(8)
-    imgString = msgString + ".png"
-    newctx.save(imgString, format="png")
-    if components:
-        return await ctx.send(file=res.discord.File((imgString)), components = components), res.os.remove(imgString)
-    else:
-        return await ctx.send(file=res.discord.File((imgString))), res.os.remove(imgString)
+        #Crop the image nicely and send it to Discord, then delete picture
+        newctx = canvas.crop((0,0,300,heightCheck))
+        msgString = randomString(8)
+        imgString = msgString + ".png"
+        newctx.save(imgString, format="png")
+        if components:
+            return await ctx.send(file=res.discord.File((imgString)), components = components), res.os.remove(imgString)
+        else:
+            return await ctx.send(file=res.discord.File((imgString))), res.os.remove(imgString)
 async def addCombatComponentsAndWaitFor(userID, ctx, Mob, msgtosend, timeouts, **kwargs):
     labelToHold = {}
     components = []
-    def Check(userID, response, label):
-        usersReactions[userID] = response
+    def Check(userid, response, label, msgid):
+        if msgid != msg.id:
+            return False
+        if userid not in usersReactions:
+            return False
+        usersReactions[userid] = response
         labelToHold["label"] = label.label
         if hasattr(label, "id"):
             labelToHold["label"] = ""
@@ -648,8 +652,8 @@ async def addCombatComponentsAndWaitFor(userID, ctx, Mob, msgtosend, timeouts, *
     msg, _ = await combatMessage(userID, ctx, Mob, msgtosend, components[0])
     try:
         done, pending = await res.asyncio.wait([
-            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value, i.component[0])),
-            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id, i.component))
+            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value, i.component[0], i.message.id)),
+            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id, i.component, i.message.id))
         ], return_when=res.asyncio.FIRST_COMPLETED, timeout=timeouts)
         for task in done:
             interaction = task.result()
@@ -845,40 +849,38 @@ async def showResources(userID, ctx):
     await sendMessage(userID, ctx, msg, True)
 
 
-
-
-
 async def queryItem(userID, ctx):
-    if not len(ctx.message.content.split(" ")) >= 3:
-        return await sendMessage(userID, ctx, "Type which item you'd like to see.", True)
-    if await UserExists(userID, ctx, False, False):
-        User = fetchUser(userID, False)
-        race = User.Race
-    else:
-        race = "orc"
-    itemName = filterSpecialChars(subStringAfter("item", ctx.message.content), True, False)
-    item = itm.Item.returnItem(itemName)
-    if not item.exists():
-        return await sendMessage(userID, ctx, "Item does not exist.", True)
-    #Check if user has it in bag
-    itemString = ""
-    if await UserExists(userID, ctx, False, False):
-        User = fetchUser(userID, False)
-        if item.Slot:
-            if User.checkIfWearingItem(item):
-                itemString = getattr(User, item.Slot)
-            elif User.checkIfHasItem(item):
-                itemString = User.checkIfHasItem()[0]
+    async with ctx.typing():
+        if not len(ctx.message.content.split(" ")) >= 3:
+            return await sendMessage(userID, ctx, "Type which item you'd like to see.", True)
+        if await UserExists(userID, ctx, False, False):
+            User = fetchUser(userID, False)
+            race = User.Race
+        else:
+            race = "orc"
+        itemName = filterSpecialChars(subStringAfter("item", ctx.message.content), True, False)
+        item = itm.Item.returnItem(itemName)
+        if not item.exists():
+            return await sendMessage(userID, ctx, "Item does not exist.", True)
+        #Check if user has it in bag
+        itemString = ""
+        if await UserExists(userID, ctx, False, False):
+            User = fetchUser(userID, False)
+            if item.Slot:
+                if User.checkIfWearingItem(item):
+                    itemString = getattr(User, item.Slot)
+                elif User.checkIfHasItem(item):
+                    itemString = User.checkIfHasItem()[0]
+                else:
+                    itemString = item.returnItemString()
             else:
                 itemString = item.returnItemString()
         else:
             itemString = item.returnItemString()
-    else:
-        itemString = item.returnItemString()
-    await showItemData(userID, ctx, itemString)
-    itemStringSplit = itemString.split("-")
-    if itemStringSplit[2] != "F" and item.Slot and item.Type:
-        canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
+        await showItemData(userID, ctx, itemString)
+        itemStringSplit = itemString.split("-")
+        if itemStringSplit[2] != "F" and item.Slot and item.Type:
+            canvas = res.Image.new('RGBA', (300,300), (0, 0, 0, 0))
         #Paste backround and race
         pasteModel("white", "", canvas, (0,0), False)
         pasteModel(race, "", canvas, (37, 16), False)
@@ -1034,10 +1036,6 @@ async def showAllUniqueInInventory(userID, ctx, itemName, msgToSend):
         if i[0] == reaction[userID]:
             return i
     
-
-
-
-
 
 
 async def craftItem(userID, ctx):
@@ -1237,8 +1235,12 @@ def checkAllVoted(dicts):
 async def addComponentsAndWaitFor(userID, ctx, msgToSend, timeouts, **kwargs):
     labelToHold = {}
     components = []
-    def Check(userID, response, label):
-        usersReactions[userID] = response
+    def Check(userid, response, label, msgid):
+        if msgid != msg.id:
+            return False
+        if userid not in usersReactions:
+            return False
+        usersReactions[userid] = response
         labelToHold["label"] = label.label
         if hasattr(label, "id"):
             labelToHold["label"] = ""
@@ -1255,8 +1257,8 @@ async def addComponentsAndWaitFor(userID, ctx, msgToSend, timeouts, **kwargs):
     msg, _ = await sendMessage(userID, ctx, msgToSend, True, components[0])
     try:
         done, pending = await res.asyncio.wait([
-            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value, i.component[0])),
-            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id, i.component))
+            res.bot.wait_for('select_option', check = lambda i: Check(str(i.user.id), i.component[0].value, i.component[0], i.message.id)),
+            res.bot.wait_for('button_click', check = lambda i: Check(str(i.user.id), i.component.id, i.component, i.message.id))
         ], return_when=res.asyncio.FIRST_COMPLETED, timeout=timeouts)
         for task in done:
             interaction = task.result()
@@ -1275,7 +1277,15 @@ async def addComponentsAndWaitFor(userID, ctx, msgToSend, timeouts, **kwargs):
 
     return usersReactions
     
-
+async def report(userID, ctx):
+    discordUser = await ctx.guild.query_members(user_ids=[userID])
+    discordUser = discordUser[0]
+    msg = " ".join(ctx.message.content.split(" ")[2:])
+    owner = await ctx.guild.query_members(user_ids=[207665962915332099])
+    owner = owner[0]
+    await owner.send(discordUser.name + " - " + str(userID) + " - " + msg)
+    embed = res.discord.Embed(title="Thank you for the submission.", description="Please give me some time to be able to respond!")
+    await ctx.message.reply(embed=embed)
 
 #Sends a ctx using sendMessage and waits for specified user(s) to respond.
 async def waitForMessage(userID, ctx, msgToSend, timeouts, **kwargs):
