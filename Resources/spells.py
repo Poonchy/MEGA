@@ -96,14 +96,14 @@ def fireball1(**kwargs):
 Spells = [
     Spell({
         "ID":"1",
-        "name":"attune-dmvc",
+        "name":"Attunement",
         "description": "Attunes you to Deadmines.",
         "type":"active",
         "function": attune
     }),
     Spell({
         "ID":"2",
-        "name":"attune-kara",
+        "name":"Attunement",
         "description": "Attunes you to Karazhan.",
         "type":"active",
         "function": attune
@@ -123,29 +123,22 @@ Spells = [
         "function": medallion
     }),
     Spell({
-        "ID":"7",
-        "name":"vctrinketrestore",
+        "ID":"5",
+        "name":"Reabsorb",
         "description": "Taking fatal damage will instead break open the medallion, causing you to heal for 100 health instead.",
         "type":"onhit",
         "function": medallionPassive
     }),
     Spell({
-        "ID":"5",
-        "name":"Reabsorb",
-        "description": "Drain the medallion, restoring the health stored.",
-        "type":"active",
-        "function": medallion
-    }),
-    Spell({
         "ID":"6",
-        "name":"mhp",
+        "name":"Minor Health",
         "description": "Restore 30 health.",
         "type":"active",
         "function": restoreHealth
     }),
     Spell({
         "ID":"8",
-        "name":"fire weapon",
+        "name":"Fiery Weapon",
         "description": "Shoot a fireball at the target, dealing 10 damage.",
         "type":"proc",
         "function": fireball1

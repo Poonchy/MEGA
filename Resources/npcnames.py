@@ -1939,4 +1939,7 @@ adjectives = [
 ]
 
 def randomNPCName():
+    rollKara = random.randint(0, 1000)
+    if rollKara < 10:
+        return "%BOSS Shade Of Karazhan) "
     return "%BOSS " + random.choice(adjectives).title() + " " + random.choice(monsterNames).title() + ") "

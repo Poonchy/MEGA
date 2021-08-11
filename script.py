@@ -60,7 +60,6 @@ async def train(ctx):
 
 @pyd.res.bot.command()
 async def item(ctx):
-    print (ctx)
     authortoken = str(ctx.author.id)
     await pyd.queryItem(authortoken, ctx)
 
@@ -100,6 +99,22 @@ async def run(ctx):
 async def report(ctx):
     authortoken = str(ctx.author.id)
     await pyd.report(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def duel(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.duel(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def roll(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.roll(authortoken, ctx)
+
+@pyd.res.bot.command()
+async def trade(ctx):
+    authortoken = str(ctx.author.id)
+    await pyd.trade(authortoken, ctx)
+
 
 @pyd.res.bot.event
 async def on_ready():

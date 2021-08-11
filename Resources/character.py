@@ -1,4 +1,6 @@
 from posixpath import split
+
+from discord.ext.commands.errors import CheckFailure
 import Resources.imports as res
 import Resources.connection as con
 import Resources.item as itm
@@ -89,7 +91,6 @@ class Character:
         equipped.append(self.Trinket) if self.Trinket.split("-")[0] != "F" else None
         return equipped
     def findByGlobalID(self, ID):
-        print ("ID: " + ID)
         for i in self.Inventory.split(","):
             if i:
                 if i.strip().split("-")[0] == ID:
@@ -127,15 +128,12 @@ class Character:
         itemInSlot = self.checkIfWearingItem(item)
         if not itemInSlot:
             return False, "Item not found equipped."
-        print (self.Inventory)
         self.addToInventory("-".join(itemList))
-        print (self.Inventory)
         self.updateSelf(item.Slot, "F-F-F-F-F-F")
         self.updateSelf("Stamina",str(int(self.Stamina) - int(item.Stamina)))
         self.updateSelf("Armor",str(int(self.Armor) - int(item.Armor)))
         self.updateSelf("Stat",str(int(self.Stat) - int(item.Stat)))
         self.updateSelf("Health",str(int(self.Health) - (int(item.Stamina) * 10)))
-        print ("I did things")
         return True, "Succesfully unequiped: " + item.returnFullItemName()
     def sell(self, itemList):
         item = itm.Item.returnItem(None, itemList[1])
@@ -197,7 +195,16 @@ class Character:
         expGained = self.modifyExp(expCalc, expCalc)
         goldGained = self.modifyGold(mob.level* ((.5 * mob.level) + 1), mob.level * 2 * ((.5 * mob.level) + 1))
         ifDinged = self.checkLevelUp(True)
-        return str(expGained), str(goldGained), ifDinged
+        loot = ""
+        
+        #World drops
+        
+        if mob.name == "%BOSS Shade Of Karazhan) " and not self.checkIfHasItem(itm.Item.returnItem("Essence of Karazhan")):
+            self.addToInventory(itm.Item.ItemStringWithNewGlobalID(itm.Item.returnItem("Essence of Karazhan")))
+            item = itm.Item.returnItem("Essence of Karazhan")
+            loot = " \n You recieved item: " + item.returnFullItemName()
+
+        return str(expGained), str(goldGained), ifDinged, loot
     
     
     
@@ -240,11 +247,6 @@ class Character:
         for i in self.procs:
             msg += i.Function(user= self, mob= mob)
         return self.damageDealt, msg
-
-
-
-
-
 
     def combat(self, boss = None, hardmode = False):
         #Create a dummy mob randomized by player level.
@@ -333,9 +335,6 @@ class Character:
                     mob.stunned = False
         return damageTakenOverall, mob.mobLevel
     
-    
-    
-    
     def returnWeaponDamage(self, item):
         if item.split("-")[1] == "F":
             return [1,1]
@@ -348,7 +347,6 @@ class Character:
 
     #Updates to character
     def removeFromInventory(self, globalItemID):
-        print (globalItemID)
         for i in self.Inventory.split(","):
             itemInBag = i.split("-")
             if itemInBag[0].strip() == globalItemID:
@@ -401,7 +399,7 @@ class Character:
             self.updateSelf("stat", str(newStat))
             self.updateSelf("level", str(newLevel))
             if newLine:
-                return " \nDing! You leveled up! \n"
+                return " \n \nDing! You leveled up!"
             else:
                 return "Ding! You leveled up!"
         else:
@@ -410,6 +408,20 @@ class Character:
         temp = self.Lockouts.replace(curLockout, curLockout[:7+bossID] + update + curLockout[8+bossID:])
         self.updateSelf("Lockouts", temp)
         return curLockout[:7+bossID] + update + curLockout[8+bossID:]
+    def returnInventory(self):
+        final = []
+        for i in self.Inventory.split(","):
+            final.append(i.split("-"))
+        for i in final:
+            if i == [""]:
+                final.remove(i)
+        print (final)
+        return final
+    def returnGlobalItem(self, ID):
+        for x in self.returnInventory():
+            if x[0] == ID:
+                return x
+        return None
 
     #Basic Spells
     def modifyHealth(self,min,max):

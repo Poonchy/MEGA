@@ -1634,7 +1634,7 @@ Items = {
         "slot": "Trinket",
         "value": "3",
         "class": "all",
-        "spells": [spl.Spell.findByID("4"), spl.Spell.findByID("5")],
+        "spells": [spl.Spell.findByID("3"), spl.Spell.findByID("4")],
         "spellattrs": [{"A":"A"}, {"B":"B"}],
         
         "flavor":"Engraved on the bottom you can see, 'E.V. + V.C.'"
@@ -1731,7 +1731,7 @@ Items = {
         "name": "Essence Of Karazhan",
         "ID": "10003",
         "rarity": "Rare",
-        "flavor":"Holding onto this makes gives you the chills. It's presence creates the winds of Deadwind Pass. Perhaphs there is someone who can make use of this"
+        "flavor":"Holding onto this makes gives you the chills. It's presence creates the winds of Deadwind Pass. Perhaphs there is someone who can make use of this."
     }),
     Item({
         "name": "Key To Karazhan",
